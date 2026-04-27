@@ -1,0 +1,289 @@
+openapi: "3.0.3"
+info:
+  title: "Example Healthcare API"
+  version: "1.0.0"
+  description: "Sample API for a healthcare system managing patients and encounters"
+servers:
+  - url: "https://api.example-hospital.com/v1"
+paths:
+  /patients:
+    get:
+      operationId: listPatients
+      summary: "List all patients"
+      tags:
+        - patient
+      parameters:
+        - name: name
+          in: query
+          required: false
+          schema:
+            type: string
+          description: "Filter by patient name"
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 20
+      responses:
+        "200":
+          description: "List of patients"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PatientSummary"
+    post:
+      operationId: createPatient
+      summary: "Create a new patient"
+      tags:
+        - patient
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PatientInput"
+      responses:
+        "201":
+          description: "Patient created"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Patient"
+        "422":
+          description: "Validation error"
+  /patients/{id}:
+    get:
+      operationId: getPatient
+      summary: "Get patient by ID"
+      tags:
+        - patient
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "Patient found"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Patient"
+        "404":
+          description: "Patient not found"
+  /patients/{id}/encounters:
+    get:
+      operationId: listPatientEncounters
+      summary: "List encounters for a patient"
+      tags:
+        - encounter
+        - patient
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "List of encounters"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Encounter"
+  /encounters:
+    post:
+      operationId: createEncounter
+      summary: "Register a new encounter (atendimento)"
+      tags:
+        - encounter
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EncounterInput"
+      responses:
+        "201":
+          description: "Encounter created"
+  /observations:
+    post:
+      operationId: createObservation
+      summary: "Record a clinical observation or lab result"
+      tags:
+        - observation
+        - lab
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ObservationInput"
+      responses:
+        "201":
+          description: "Observation recorded"
+  /medications:
+    get:
+      operationId: listMedications
+      summary: "List medication prescriptions"
+      tags:
+        - medication
+      parameters:
+        - name: patient_id
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "Medication list"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MedicationRequest"
+components:
+  schemas:
+    Address:
+      type: object
+      properties:
+        street:
+          type: string
+        city:
+          type: string
+        state:
+          type: string
+        zip:
+          type: string
+    ContactInfo:
+      type: object
+      properties:
+        phone:
+          type: string
+        email:
+          type: string
+    PersonBase:
+      type: object
+      required:
+        - name
+        - birthDate
+      properties:
+        name:
+          type: string
+        birthDate:
+          type: string
+          format: date
+        gender:
+          type: string
+          enum: [male, female, other, unknown]
+    PatientSummary:
+      allOf:
+        - $ref: "#/components/schemas/PersonBase"
+        - type: object
+          properties:
+            id:
+              type: string
+    Patient:
+      allOf:
+        - $ref: "#/components/schemas/PatientSummary"
+        - type: object
+          properties:
+            address:
+              $ref: "#/components/schemas/Address"
+            contact:
+              $ref: "#/components/schemas/ContactInfo"
+            cpf:
+              type: string
+              description: "Brazilian CPF identifier"
+            cns:
+              type: string
+              description: "Cartão Nacional de Saúde"
+    PatientInput:
+      allOf:
+        - $ref: "#/components/schemas/PersonBase"
+        - type: object
+          properties:
+            address:
+              $ref: "#/components/schemas/Address"
+            contact:
+              $ref: "#/components/schemas/ContactInfo"
+            cpf:
+              type: string
+            cns:
+              type: string
+    Encounter:
+      type: object
+      properties:
+        id:
+          type: string
+        patientId:
+          type: string
+        practitionerId:
+          type: string
+        startDate:
+          type: string
+          format: date-time
+        endDate:
+          type: string
+          format: date-time
+        status:
+          type: string
+          enum: [planned, arrived, in-progress, finished, cancelled]
+        diagnosis:
+          type: string
+    EncounterInput:
+      type: object
+      required:
+        - patientId
+        - startDate
+      properties:
+        patientId:
+          type: string
+        practitionerId:
+          type: string
+        startDate:
+          type: string
+          format: date-time
+        diagnosis:
+          type: string
+    ObservationInput:
+      type: object
+      required:
+        - patientId
+        - code
+        - value
+      properties:
+        patientId:
+          type: string
+        code:
+          type: string
+          description: "LOINC code"
+        value:
+          type: number
+        unit:
+          type: string
+        effectiveDate:
+          type: string
+          format: date-time
+    MedicationRequest:
+      type: object
+      properties:
+        id:
+          type: string
+        patientId:
+          type: string
+        medicationCode:
+          type: string
+        dosage:
+          type: string
+        frequency:
+          type: string
+        prescribedBy:
+          type: string

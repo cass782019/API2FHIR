@@ -1,0 +1,30 @@
+{
+  "timestamp": "2026-04-27T19:54:41.422934+00:00",
+  "mean_precision": 1.0,
+  "mean_recall": 1.0,
+  "mean_f1": 1.0,
+  "validation_rate": 1.0,
+  "regression_free": true,
+  "pairs": [
+    {
+      "name": "example_api",
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "valid": true,
+      "passed": true,
+      "diff_keys": [],
+      "error": ""
+    },
+    {
+      "name": "example_api_v2",
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "valid": true,
+      "passed": true,
+      "diff_keys": [],
+      "error": ""
+    }
+  ]
+}

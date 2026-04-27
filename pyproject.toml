@@ -1,0 +1,222 @@
+# pyproject.toml — raiz do uv workspace
+# Define dependências compartilhadas e aponta para os packages.
+
+[project]
+name = "fhir-forge"
+version = "0.1.0"
+description = "Pipeline FHIR híbrido (LLM + SUSHI + validators) para BR Core e RNDS"
+requires-python = ">=3.12"
+authors = [
+    { name = "Cassiano Moralles" }
+]
+license = { text = "Apache-2.0" }
+readme = "README.md"
+
+dependencies = [
+    # Apps & frameworks
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.32",
+    "typer>=0.13",
+    "pydantic>=2.9",
+    "pydantic-settings>=2.6",
+    "httpx>=0.28",
+
+    # FHIR
+    "fhir.resources>=7.1.0",
+
+    # Async / queue
+    "dramatiq[redis,watch]>=1.17",
+    "redis>=5.2",
+
+    # Database & vector
+    "psycopg[binary,pool]>=3.2",
+    "pgvector>=0.3",
+    "sqlalchemy>=2.0",
+    "alembic>=1.14",
+
+    # LangGraph & LLM
+    "langgraph>=0.6",
+    "langgraph-checkpoint-postgres>=3.0",
+    "anthropic>=0.50",
+    "openai>=1.55",
+    "boto3>=1.35",                          # Bedrock
+
+    # Retrieval & embeddings
+    "bm25s>=0.2",
+    "sentence-transformers>=3.3",
+    "transformers>=4.46",
+    "torch>=2.5",
+
+    # Storage
+    "minio>=7.2",
+
+    # Parsing OpenAPI/Swagger
+    "openapi-spec-validator>=0.7",
+    "openapi-pydantic>=0.5",
+    "PyYAML>=6.0",
+
+    # Logging & telemetry
+    "structlog>=24.4",
+    "opentelemetry-api>=1.28",
+    "opentelemetry-sdk>=1.28",
+    "opentelemetry-instrumentation-fastapi>=0.49b0",
+    "opentelemetry-exporter-otlp>=1.28",
+    "langfuse>=3.0",
+    "prometheus-client>=0.21",
+
+    # Resiliency
+    "tenacity>=9.0",
+    "pybreaker>=1.2",
+
+    # MCP server
+    "fastmcp>=3.0",
+
+    # Misc utils
+    "python-dateutil>=2.9",
+    "rich>=13.9",
+    "ulid-py>=1.1",
+]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.8",
+    "mypy>=1.13",
+    "sqlfluff>=3.2",
+    "pytest>=8.3",
+    "pytest-asyncio>=0.24",
+    "pytest-cov>=6.0",
+    "pytest-bdd>=8.0",
+    "hypothesis>=6.122",
+    "testcontainers>=4.8",
+    "respx>=0.21",          # mock httpx
+    "freezegun>=1.5",
+    "pre-commit>=4.0",
+    "ipython>=8.30",
+    "ipdb>=0.13",
+    "python-pptx>=1.0",
+    "python-docx>=1.1",
+]
+
+[tool.uv]
+package = false
+dev-dependencies = [
+    # Espelha [dependency-groups.dev] para uv lock-friendly behavior
+]
+
+[tool.uv.workspace]
+members = [
+    "apps/*",
+    "packages/*",
+]
+
+# ─────────────────────────────────────────────────────────────
+# Ruff — lint + format (substitui black + flake8 + isort)
+# ─────────────────────────────────────────────────────────────
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+exclude = [
+    "ig/output",
+    "ig/input-cache",
+    "data/codesystems/*/raw",
+    "**/.venv",
+    "**/__pycache__",
+]
+
+[tool.ruff.lint]
+select = [
+    "E", "F", "W",   # pycodestyle + pyflakes
+    "I",             # isort
+    "B",             # flake8-bugbear
+    "UP",            # pyupgrade
+    "N",             # pep8-naming
+    "RUF",           # ruff-specific
+    "SIM",           # simplify
+    "TCH",           # type-checking
+    "ASYNC",         # async best practices
+    "S",             # bandit (security)
+]
+ignore = [
+    "E501",          # line too long (handled by formatter)
+    "S101",          # use of assert (ok in tests)
+    "S603",          # subprocess call (we DO use subprocess)
+    "S607",          # partial executable path (sushi, validator_cli are PATH)
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*.py" = ["S", "N", "E702", "ASYNC240"]
+"scripts/**/*.py" = ["S"]
+
+[tool.ruff.format]
+quote-style = "double"
+docstring-code-format = true
+
+# ─────────────────────────────────────────────────────────────
+# MyPy
+# ─────────────────────────────────────────────────────────────
+[tool.mypy]
+python_version = "3.12"
+strict = true
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+no_implicit_optional = true
+check_untyped_defs = true
+disallow_untyped_decorators = true
+exclude = [
+    "ig/output",
+    "tests/fixtures",
+]
+
+[[tool.mypy.overrides]]
+module = [
+    "fhir.resources.*",
+    "bm25s.*",
+    "sentence_transformers.*",
+    "fastmcp.*",
+    "dramatiq.*",
+    "langfuse.*",
+    "yaml",
+    "openapi_spec_validator.*",
+    "openapi_pydantic.*",
+]
+ignore_missing_imports = true
+
+# ─────────────────────────────────────────────────────────────
+# Pytest
+# ─────────────────────────────────────────────────────────────
+[tool.pytest.ini_options]
+minversion = "8.0"
+testpaths = ["tests"]
+python_files = "test_*.py"
+asyncio_mode = "auto"
+addopts = [
+    "-v",
+    "--strict-markers",
+    "--tb=short",
+    "--cov=packages",
+    "--cov-report=term-missing:skip-covered",
+    "--cov-report=html:.coverage_html",
+]
+markers = [
+    "unit: pure unit tests, no I/O",
+    "integration: requires testcontainers (postgres, redis, hapi, snowstorm)",
+    "regression: golden-file diff; requires golden data in data/golden/",
+    "e2e: end-to-end saga tests, slow",
+    "rnds: requires RNDS sandbox credentials in env",
+    "slow: takes >5s",
+]
+
+[tool.coverage.run]
+branch = true
+source = ["packages", "apps"]
+omit = ["*/tests/*", "*/migrations/*"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "raise NotImplementedError",
+    "if TYPE_CHECKING:",
+    "\\.\\.\\.",
+]

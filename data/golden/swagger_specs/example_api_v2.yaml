@@ -1,0 +1,115 @@
+swagger: "2.0"
+info:
+  title: "Legacy Healthcare API"
+  version: "2.3.1"
+  description: "Legacy Swagger 2.0 spec for patient management"
+host: "legacy.hospital.example.com"
+basePath: "/api"
+schemes:
+  - https
+paths:
+  /pacientes:
+    get:
+      operationId: listarPacientes
+      summary: "Listar todos os pacientes"
+      tags:
+        - paciente
+      parameters:
+        - name: nome
+          in: query
+          required: false
+          type: string
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: "Lista de pacientes"
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/Paciente"
+    post:
+      operationId: criarPaciente
+      summary: "Criar novo paciente"
+      tags:
+        - paciente
+      consumes:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            $ref: "#/definitions/PacienteInput"
+      responses:
+        "201":
+          description: "Paciente criado"
+          schema:
+            $ref: "#/definitions/Paciente"
+  /exames:
+    get:
+      operationId: listarExames
+      summary: "Listar exames laboratoriais"
+      tags:
+        - exame
+        - lab
+      parameters:
+        - name: paciente_id
+          in: query
+          required: false
+          type: string
+      responses:
+        "200":
+          description: "Lista de exames"
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/Exame"
+definitions:
+  Paciente:
+    type: object
+    required:
+      - nome
+      - dataNascimento
+    properties:
+      id:
+        type: string
+      nome:
+        type: string
+      dataNascimento:
+        type: string
+        format: date
+      cpf:
+        type: string
+      sexo:
+        type: string
+        enum: [M, F, I]
+  PacienteInput:
+    type: object
+    required:
+      - nome
+      - dataNascimento
+    properties:
+      nome:
+        type: string
+      dataNascimento:
+        type: string
+        format: date
+      cpf:
+        type: string
+      sexo:
+        type: string
+  Exame:
+    type: object
+    properties:
+      id:
+        type: string
+      pacienteId:
+        type: string
+      codigo:
+        type: string
+        description: "Código LOINC"
+      resultado:
+        type: number
+      unidade:
+        type: string

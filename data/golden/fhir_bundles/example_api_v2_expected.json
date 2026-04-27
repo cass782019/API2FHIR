@@ -1,0 +1,55 @@
+{
+  "resourceType": "Bundle",
+  "type": "collection",
+  "entry": [
+    {
+      "resource": {
+        "resourceType": "Patient",
+        "meta": {
+          "profile": [
+            "http://www.saude.gov.br/fhir/r4/StructureDefinition/BRIndividuo-1.0"
+          ]
+        },
+        "identifier": [
+          {
+            "system": "https://rnds.saude.gov.br/fhir/NamingSystem/cpf",
+            "value": "987.654.321-00"
+          }
+        ],
+        "name": [
+          {
+            "use": "official",
+            "family": "Santos",
+            "given": ["João", "Carlos"]
+          }
+        ],
+        "gender": "male",
+        "birthDate": "1972-07-20"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "2085-9",
+              "display": "HDL Cholesterol"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/patient-example"
+        },
+        "valueQuantity": {
+          "value": 1.2,
+          "unit": "mmol/L",
+          "system": "http://unitsofmeasure.org",
+          "code": "mmol/L"
+        }
+      }
+    }
+  ]
+}

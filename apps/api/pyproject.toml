@@ -1,0 +1,27 @@
+[project]
+name = "fhir-forge-api"
+version = "0.1.0"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.32",
+    "httpx>=0.28",
+    "opentelemetry-api>=1.28",
+    "opentelemetry-sdk>=1.28",
+    "opentelemetry-instrumentation-fastapi>=0.49b0",
+    "fhir-forge-core",
+    "fhir-forge-fhir-forge",
+    "fhir-forge-connectors",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/api"]
+
+[tool.uv.sources]
+fhir-forge-core = { workspace = true }
+fhir-forge-fhir-forge = { workspace = true }
+fhir-forge-connectors = { workspace = true }

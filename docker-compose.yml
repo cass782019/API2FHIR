@@ -1,0 +1,241 @@
+# FHIR-Forge — docker-compose.yml
+# Stack completa de desenvolvimento. Versões pinadas em abril/2026.
+# Requisito: Docker 24+, docker compose v2, ~12 GB RAM disponível.
+#
+# Uso rápido:
+#   make up          # sobe tudo
+#   make logs        # tail -f de todos os serviços
+#   make ps          # status
+#   make down        # derruba (mantém volumes)
+#   make nuke        # derruba e apaga volumes (cuidado)
+
+name: fhir-forge
+
+x-healthcheck-defaults: &hc
+  interval: 10s
+  timeout: 5s
+  retries: 12
+  start_period: 30s
+
+services:
+
+  # ─────────────────────────────────────────────────────────────
+  # Postgres com pgvector — backend para HAPI, LangGraph checkpoints,
+  # term_mapper indices e application data.
+  # ─────────────────────────────────────────────────────────────
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: forge-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-forge}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-forge_dev}
+      POSTGRES_MULTIPLE_DATABASES: hapi,langgraph,forge,terminology
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./scripts/postgres-init.sh:/docker-entrypoint-initdb.d/00-init.sh:ro
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-forge}"]
+      <<: *hc
+    networks:
+      - forge-net
+
+  # ─────────────────────────────────────────────────────────────
+  # Redis — fila Dramatiq, cache de embeddings, rate limiting.
+  # ─────────────────────────────────────────────────────────────
+  redis:
+    image: redis:7.4-alpine
+    container_name: forge-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes --maxmemory 1gb --maxmemory-policy allkeys-lru
+    volumes:
+      - redis-data:/data
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      <<: *hc
+    networks:
+      - forge-net
+
+  # ─────────────────────────────────────────────────────────────
+  # Minio — S3-compatible para artefatos (IGs publicados, snapshots,
+  # CodeSystem dumps, conceptmap exports).
+  # ─────────────────────────────────────────────────────────────
+  minio:
+    image: minio/minio:RELEASE.2025-09-07T16-13-09Z
+    container_name: forge-minio
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-forge}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-forge_dev_password}
+    volumes:
+      - minio-data:/data
+    ports:
+      - "${MINIO_PORT:-9000}:9000"
+      - "${MINIO_CONSOLE_PORT:-9001}:9001"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      <<: *hc
+    networks:
+      - forge-net
+
+  # ─────────────────────────────────────────────────────────────
+  # HAPI FHIR JPA Server — FHIR R4 storage + $validate + $expand.
+  # Aceita IG packages via env vars. BR Core carregado abaixo.
+  # ─────────────────────────────────────────────────────────────
+  hapi:
+    image: hapiproject/hapi:v8.4.0-2
+    container_name: forge-hapi
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      # Datasource Postgres
+      spring.datasource.url: jdbc:postgresql://postgres:5432/hapi
+      spring.datasource.username: ${POSTGRES_USER:-forge}
+      spring.datasource.password: ${POSTGRES_PASSWORD:-forge_dev}
+      spring.datasource.driverClassName: org.postgresql.Driver
+      spring.jpa.properties.hibernate.dialect: ca.uhn.fhir.jpa.model.dialect.HapiFhirPostgres94Dialect
+      # FHIR config
+      hapi.fhir.fhir_version: R4
+      hapi.fhir.server_address: http://localhost:${HAPI_PORT:-8090}/fhir
+      hapi.fhir.tester.home.server_address: http://localhost:${HAPI_PORT:-8090}/fhir
+      hapi.fhir.cors.allowed_origin: "*"
+      hapi.fhir.allow_external_references: "true"
+      hapi.fhir.allow_multiple_delete: "true"
+      # Validação ativa por default
+      hapi.fhir.validation.requests_enabled: "true"
+      hapi.fhir.validation.responses_enabled: "false"
+      # IG packages — descomente para carregar BR Core no boot
+      # hapi.fhir.implementationguides.brcore.name: br.gov.saude.br-core.fhir
+      # hapi.fhir.implementationguides.brcore.version: 1.0.0
+      # hapi.fhir.implementationguides.brcore.installMode: STORE_AND_INSTALL
+    ports:
+      - "${HAPI_PORT:-8090}:8080"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/fhir/metadata"]
+      interval: 15s
+      timeout: 10s
+      retries: 20
+      start_period: 90s
+    networks:
+      - forge-net
+
+  # ─────────────────────────────────────────────────────────────
+  # Elasticsearch — backend obrigatório do Snowstorm.
+  # Versão fixada em 8.11.1 conforme docker-compose oficial Snowstorm.
+  # Requer vm.max_map_count=262144 no host (ver scripts/bootstrap.sh).
+  # ─────────────────────────────────────────────────────────────
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.11.1
+    container_name: forge-elasticsearch
+    restart: unless-stopped
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - node.name=snowstorm
+      - cluster.name=snowstorm-cluster
+      - ES_JAVA_OPTS=-Xms2g -Xmx4g
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data
+    ports:
+      - "${ES_PORT:-9200}:9200"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:9200/_cluster/health?wait_for_status=yellow&timeout=5s || exit 1"]
+      interval: 10s
+      timeout: 10s
+      retries: 30
+      start_period: 60s
+    mem_reservation: 4g
+    networks:
+      - forge-net
+
+  # ─────────────────────────────────────────────────────────────
+  # Snowstorm — terminology server SNOMED CT + FHIR API.
+  # Sobe vazio; carregar SNOMED CT exige RF2 release oficial
+  # (precisa licença SNOMED CT BR — ver docs/runbooks/snowstorm-load.md).
+  # ─────────────────────────────────────────────────────────────
+  snowstorm:
+    image: snomedinternational/snowstorm:7.5.0
+    container_name: forge-snowstorm
+    restart: unless-stopped
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    entrypoint: >
+      java -Xms2g -Xmx4g
+      --add-opens java.base/java.lang=ALL-UNNAMED
+      --add-opens=java.base/java.util=ALL-UNNAMED
+      -cp @/app/jib-classpath-file
+      org.snomed.snowstorm.SnowstormApplication
+      --elasticsearch.urls=http://elasticsearch:9200
+    volumes:
+      - ./data/snomed-import:/app/import
+    ports:
+      - "${SNOWSTORM_PORT:-8080}:8080"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/branches/MAIN || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 20
+      start_period: 120s
+    networks:
+      - forge-net
+
+  # ─────────────────────────────────────────────────────────────
+  # Langfuse — observabilidade de spans LLM.
+  # Stack mínimo: app + postgres dedicado (compartilha o nosso).
+  # Para produção, usar deployment próprio.
+  # ─────────────────────────────────────────────────────────────
+  langfuse:
+    image: langfuse/langfuse:3
+    container_name: forge-langfuse
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-forge}:${POSTGRES_PASSWORD:-forge_dev}@postgres:5432/langfuse
+      NEXTAUTH_SECRET: ${LANGFUSE_NEXTAUTH_SECRET:-dev_only_change_me_xxxxxxxxxxxxxx}
+      SALT: ${LANGFUSE_SALT:-dev_only_change_me_yyyyyyyyyyyyyy}
+      ENCRYPTION_KEY: ${LANGFUSE_ENCRYPTION_KEY:-0000000000000000000000000000000000000000000000000000000000000000}
+      NEXTAUTH_URL: http://localhost:${LANGFUSE_PORT:-3000}
+      TELEMETRY_ENABLED: "false"
+    ports:
+      - "${LANGFUSE_PORT:-3000}:3000"
+    networks:
+      - forge-net
+
+  # ─────────────────────────────────────────────────────────────
+  # Adminer — UI rápida para inspecionar Postgres.
+  # ─────────────────────────────────────────────────────────────
+  adminer:
+    image: adminer:4.8.1
+    container_name: forge-adminer
+    restart: unless-stopped
+    profiles: ["debug"]   # só sobe com `docker compose --profile debug up`
+    environment:
+      ADMINER_DEFAULT_SERVER: postgres
+    ports:
+      - "${ADMINER_PORT:-8081}:8080"
+    networks:
+      - forge-net
+
+volumes:
+  postgres-data:
+  redis-data:
+  minio-data:
+  elasticsearch-data:
+
+networks:
+  forge-net:
+    driver: bridge

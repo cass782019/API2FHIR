@@ -1,0 +1,19 @@
+# docker-compose.override.yml — sobrescritas locais de desenvolvimento.
+# Carregado automaticamente pelo `docker compose up`.
+# NÃO commitar mudanças pessoais aqui — fazer cópia em docker-compose.dev.local.yml.
+
+services:
+  hapi:
+    # Em dev, expor logs verbose
+    environment:
+      logging.level.ca.uhn.fhir: INFO
+      logging.level.org.springframework: WARN
+
+  postgres:
+    # Persistir consultas para debug
+    command:
+      - "postgres"
+      - "-c"
+      - "log_statement=all"
+      - "-c"
+      - "log_destination=stderr"

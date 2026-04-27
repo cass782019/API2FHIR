@@ -1,0 +1,86 @@
+# ─── Python ──────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+env/
+build/
+dist/
+*.egg-info/
+*.egg
+.eggs/
+
+# ─── uv ──────────────────────────────────────────────────────
+# uv.lock SHOULD be committed; only ignore caches
+.uv-cache/
+
+# ─── Testes & coverage ───────────────────────────────────────
+.pytest_cache/
+.coverage
+.coverage.*
+.coverage_html/
+htmlcov/
+.tox/
+.nox/
+.hypothesis/
+
+# ─── Type checkers ───────────────────────────────────────────
+.mypy_cache/
+.ruff_cache/
+.pyre/
+
+# ─── Editores ────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ─── Sistema ─────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+
+# ─── Secrets — NUNCA commitar ────────────────────────────────
+.env
+.env.local
+.env.*.local
+secrets/
+*.pfx
+*.p12
+*.pem
+!*.example.pfx
+
+# ─── Docker / data ───────────────────────────────────────────
+data/snomed-import/
+data/codesystems/*/raw/
+*.log
+
+# ─── IG build artifacts ──────────────────────────────────────
+ig/output/
+ig/input-cache/
+ig/temp/
+ig/template/
+ig/*.tgz
+
+# ─── Tools baixados ──────────────────────────────────────────
+tools/validator_cli.jar
+tools/publisher.jar
+tools/*.jar
+
+# ─── Langfuse local data ─────────────────────────────────────
+.langfuse/
+
+# ─── Claude Code local config ────────────────────────────────
+.claude/
+
+# ─── Arquivos temporários / locais ───────────────────────────
+*.pdf
+
+# ─── Outputs locais ──────────────────────────────────────────
+*.pid
+*.lock
+!uv.lock
+!package-lock.json

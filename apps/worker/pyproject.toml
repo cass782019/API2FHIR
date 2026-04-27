@@ -1,0 +1,24 @@
+[project]
+name = "fhir-forge-worker"
+version = "0.1.0"
+requires-python = ">=3.12"
+dependencies = [
+    "dramatiq[redis]>=1.17",
+    "redis>=5.2",
+    "anthropic>=0.50",
+    "fhir-forge-core",
+    "fhir-forge-fhir-forge",
+    "fhir-forge-swagger-lens",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/worker"]
+
+[tool.uv.sources]
+fhir-forge-core = { workspace = true }
+fhir-forge-fhir-forge = { workspace = true }
+fhir-forge-swagger-lens = { workspace = true }
