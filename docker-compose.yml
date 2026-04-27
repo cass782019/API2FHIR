@@ -118,11 +118,11 @@ services:
     ports:
       - "${HAPI_PORT:-8090}:8080"
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/fhir/metadata"]
+      test: ["CMD-SHELL", "bash -c 'echo >/dev/tcp/localhost/8080' 2>/dev/null || exit 1"]
       interval: 15s
       timeout: 10s
       retries: 20
-      start_period: 90s
+      start_period: 60s
     networks:
       - forge-net
 
@@ -132,7 +132,7 @@ services:
   # Requer vm.max_map_count=262144 no host (ver scripts/bootstrap.sh).
   # ─────────────────────────────────────────────────────────────
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:8.11.1
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.24
     container_name: forge-elasticsearch
     restart: unless-stopped
     environment:
@@ -171,13 +171,9 @@ services:
     depends_on:
       elasticsearch:
         condition: service_healthy
-    entrypoint: >
-      java -Xms2g -Xmx4g
-      --add-opens java.base/java.lang=ALL-UNNAMED
-      --add-opens=java.base/java.util=ALL-UNNAMED
-      -cp @/app/jib-classpath-file
-      org.snomed.snowstorm.SnowstormApplication
-      --elasticsearch.urls=http://elasticsearch:9200
+    command: --elasticsearch.urls=http://elasticsearch:9200
+    environment:
+      - JAVA_TOOL_OPTIONS=-Xms2g -Xmx4g
     volumes:
       - ./data/snomed-import:/app/import
     ports:
@@ -197,7 +193,7 @@ services:
   # Para produção, usar deployment próprio.
   # ─────────────────────────────────────────────────────────────
   langfuse:
-    image: langfuse/langfuse:3
+    image: langfuse/langfuse:2
     container_name: forge-langfuse
     restart: unless-stopped
     depends_on:
