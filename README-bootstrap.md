@@ -2,9 +2,11 @@
 
 Pacote mínimo executável para destravar a **Fase 0** do `CLAUDE.md` (§9). Coloque estes arquivos na raiz do repositório vazio, rode `make bootstrap`, e em ~10 minutos você tem stack completa rodando localmente.
 
-**Estado atual (Abril 2026):** Todas as 9 fases de implementação estão completas — 252 testes unitários passando, 91% de cobertura, ruff + mypy strict OK.
+**Estado atual (Abril 2026) — tag v2:** Todas as 9 fases completas + testes e2e validados com pipeline real (Anthropic + HAPI). 252 testes unitários + 6 e2e passando, 91% de cobertura, ruff + mypy strict OK.
 
-> **Versões pinadas em abril/2026**: HAPI FHIR 8.4.0-2 · Snowstorm 7.5.0 · Elasticsearch 8.11.1 · Postgres 16 (pgvector) · Redis 7.4 · Minio (release 2025-09) · Langfuse 3.x · Adminer 4.8.1.
+> **Versões pinadas em abril/2026**: HAPI FHIR 8.4.0-2 · Snowstorm 7.5.0 · Elasticsearch **7.17.24** · Postgres 16 (pgvector) · Redis 7.4 · Minio (release 2025-09) · Langfuse **2.x** · Adminer 4.8.1.
+>
+> **Nota**: ES 7.17.24 (não 8.x) — Snowstorm 7.x usa cliente Java ES 7.x. Langfuse 2.x (não 3.x) — v3 exige ClickHouse adicional.
 
 ---
 
@@ -91,12 +93,13 @@ make logs      # tail -f de tudo
 ## Primeiros passos após bootstrap
 
 ```bash
-make health                              # verifica saúde da stack
+make health                              # verifica saúde dos 7 serviços
 make test                                # 252 testes unitários
+make test-e2e                            # 6 testes e2e (requer ANTHROPIC_API_KEY + stack up)
 make api                                 # FastAPI em http://localhost:8000
 make worker                              # Dramatiq worker
-uv run python scripts/generate_pptx.py  # gera docs/fhir-forge-arquitetura.pptx
-uv run python scripts/generate_docx.py  # gera docs/fhir-forge-arquitetura.docx
+make proxy                               # ProxyLLM local (sem API key)
+make docs                                # gera PPTX + DOCX em docs/
 ```
 
 Para os prompts de implementação de cada fase, ver `CLAUDE.md` §10.
@@ -153,9 +156,9 @@ curl http://localhost:8090/fhir/StructureDefinition?url=http://hl7.org.br/fhir/r
 
 ---
 
-## O que está implementado
+## O que está implementado (tag v2)
 
-Todos os packages e apps do workspace uv foram implementados com gates verdes:
+Todos os packages e apps implementados com gates verdes. Pipeline e2e validado com Anthropic real + HAPI real:
 
 - `packages/core` — Settings, LLMRouter, tipos, exceções, logging
 - `packages/swagger_lens` — Parser OpenAPI 2.0/3.x completo com hypothesis
@@ -166,6 +169,10 @@ Todos os packages e apps do workspace uv foram implementados com gates verdes:
 - `packages/mcp_server` — 6 FastMCP tools para integração com Claude
 - `apps/api` — FastAPI gateway com 4 routers + OTEL + auth middleware
 - `apps/worker` — Dramatiq workers com DLQ + idempotência Redis
+- `proxyllm/` — Proxy local /v1/messages (mock FHIR ou Ollama) para dev sem API key
+- `tests/e2e/` — 6 testes e2e: spec OpenAPI → LangGraph → HAPI $validate → Bundle
+
+**E2E validado (Abril 2026):** 7 endpoints mapeados, fix_node ativado, Bundle com 0 erros fatais no HAPI.
 
 **Ainda não incluído (trabalho futuro):**
 
@@ -179,7 +186,7 @@ Todos os packages e apps do workspace uv foram implementados com gates verdes:
 ## Arquivos neste pacote
 
 ```
-bootstrap-pack/
+fhir-forge/
 ├── README-bootstrap.md          ← este arquivo
 ├── docker-compose.yml           ← stack principal (versões pinadas)
 ├── docker-compose.override.yml  ← sobrescritas dev (logs verbose)
@@ -187,9 +194,17 @@ bootstrap-pack/
 ├── Makefile                     ← atalhos (make help)
 ├── .env.example                 ← template de variáveis
 ├── .gitignore
-└── scripts/
-    ├── bootstrap.sh             ← setup idempotente
-    ├── postgres-init.sh         ← cria múltiplas DBs no boot
-    ├── generate_pptx.py         ← gera apresentação PPTX de arquitetura
-    └── generate_docx.py         ← gera documento DOCX de arquitetura
+├── proxyllm/
+│   ├── server.py                ← proxy /v1/messages (mock ou Ollama)
+│   └── Dockerfile               ← imagem para docker compose --profile proxyllm
+├── scripts/
+│   ├── bootstrap.sh             ← setup idempotente
+│   ├── postgres-init.sh         ← cria múltiplas DBs no boot
+│   ├── generate_pptx.py         ← gera apresentação PPTX de arquitetura
+│   └── generate_docx.py         ← gera documento DOCX de arquitetura
+├── tests/e2e/
+│   └── test_convert_e2e.py      ← 6 testes end-to-end
+└── docs/
+    ├── fhir-forge-arquitetura.pptx  ← apresentação 17 slides
+    └── fhir-forge-arquitetura.docx  ← documento 15 capítulos
 ```

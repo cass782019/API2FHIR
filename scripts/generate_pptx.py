@@ -27,7 +27,7 @@ AMBER        = RGBColor(0xD9, 0x77, 0x06)
 LIGHT_BLUE   = RGBColor(0xDB, 0xEA, 0xFB)
 LIGHT_GREEN  = RGBColor(0xD1, 0xF5, 0xE4)
 
-FOOTER_TEXT  = "FHIR-Forge v0.1.0  |  Abril 2026  |  Apache-2.0  |  Cassiano Moralles"
+FOOTER_TEXT  = "FHIR-Forge v2  |  Abril 2026  |  Apache-2.0  |  Cassiano Moralles"
 
 
 # ── Helpers ──────────────────────────────────────────────────────────────────
@@ -168,7 +168,7 @@ def slide_01_capa(prs: Presentation) -> None:
     bot.fill.solid(); bot.fill.fore_color.rgb = ACCENT_GREEN
     bot.line.fill.background()
     _txb(slide,
-         "Versão 0.1.0  |  Abril 2026  |  Apache-2.0  |  Cassiano Moralles",
+         "Versão 2  |  Abril 2026  |  Apache-2.0  |  Cassiano Moralles",
          0, 6.9, 13.33, 0.6,
          size=13, color=WHITE, align=PP_ALIGN.CENTER, bold=True)
 
@@ -439,13 +439,13 @@ def slide_09_infra(prs: Presentation) -> None:
     services = [
         ("HAPI FHIR 8.4.0", "Porta 8090", "Validação + armazenamento FHIR", ACCENT_BLUE),
         ("Snowstorm 7.5.0", "Porta 8080", "Servidor SNOMED CT", ACCENT_BLUE),
-        ("Elasticsearch 8.11.1", "Porta 9200", "Backend do Snowstorm", ACCENT_BLUE),
+        ("Elasticsearch 7.17.24", "Porta 9200", "Backend do Snowstorm", ACCENT_BLUE),
         ("PostgreSQL 16 + pgvector", "Porta 5432", "HAPI JPA · LangGraph · App data", DARK_NAVY),
         ("Redis 7.4", "Porta 6379", "Fila Dramatiq + cache de terminologia", DARK_NAVY),
         ("MinIO", "Portas 9000/9001", "Artefatos S3-compatible", DARK_NAVY),
-        ("Langfuse 3.x", "Porta 3000", "Observabilidade de LLMs (traces)", ACCENT_GREEN),
+        ("Langfuse 2.x", "Porta 3000", "Observabilidade de LLMs (traces)", ACCENT_GREEN),
+        ("ProxyLLM", "Porta 9099", "Proxy /v1/messages — mock ou Ollama", ACCENT_GREEN),
         ("FastAPI App", "Porta 8000", "Gateway REST da aplicação", ACCENT_GREEN),
-        ("Dramatiq Workers", "—", "Processamento assíncrono de conversões", ACCENT_GREEN),
     ]
     for i, (nome, porta, desc, cor) in enumerate(services):
         col = i % 3
@@ -674,14 +674,14 @@ def slide_14_eval(prs: Presentation) -> None:
 
 def slide_15_testes(prs: Presentation) -> None:
     slide = _new_slide(prs)
-    _title_bar(slide, "Estratégia de Testes: 252 Testes, 91% de Cobertura")
+    _title_bar(slide, "Estratégia de Testes: 252 Unit + 6 E2E, 91% de Cobertura")
 
     headers = ["Camada", "Marker", "Ferramentas", "O que testa", "Cobertura mín."]
     rows = [
         ["Unit", "@pytest.mark.unit", "pytest, respx, unittest.mock", "Lógica pura — 0 I/O real", "≥ 80%"],
         ["Integration", "@pytest.mark.integration", "testcontainers (Postgres+Redis+HAPI)", "CRUD HAPI, filas, banco", "≥ 80%"],
         ["Regression", "@pytest.mark.regression", "deepdiff golden-files", "Output FHIR não regride", "—"],
-        ["E2E", "@pytest.mark.e2e", "Docker stack completa", "Saga OpenAPI → Bundle", "—"],
+        ["E2E", "@pytest.mark.e2e", "Anthropic API real + HAPI real", "OpenAPI → LangGraph → Bundle (6 testes)", "—"],
         ["RNDS", "@pytest.mark.rnds", "Sandbox RNDS", "Submissão real (credenciais)", "—"],
     ]
     cols_w = [1.6, 2.4, 3.8, 3.5, 1.6]
@@ -756,8 +756,8 @@ def slide_17_resultados(prs: Presentation) -> None:
 
     kpis = [
         ("252", "testes unit passando"),
+        ("6", "testes e2e validados"),
         ("91%", "cobertura de código"),
-        ("9/9", "fases completas"),
         ("0", "erros lint/mypy"),
     ]
     for i, (val, label) in enumerate(kpis):
@@ -766,7 +766,7 @@ def slide_17_resultados(prs: Presentation) -> None:
         _txb(slide, val, left, 1.05, 3.0, 1.0, size=42, bold=True, color=WHITE, align=PP_ALIGN.CENTER)
         _txb(slide, label, left, 2.0, 3.0, 0.55, size=13, color=WHITE, align=PP_ALIGN.CENTER)
 
-    _txb(slide, "Próximos Passos:", 0.3, 3.0, 12.7, 0.45, size=15, bold=True, color=DARK_NAVY)
+    _txb(slide, "Próximos Passos (v3):", 0.3, 3.0, 12.7, 0.45, size=15, bold=True, color=DARK_NAVY)
     roadmap = [
         "• GitHub Actions CI/CD (ci.yml, ig-build.yml) — push/PR/main em < 3/12/20 min",
         "• Helm charts e manifests Kubernetes para deploy em produção",

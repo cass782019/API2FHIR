@@ -69,11 +69,17 @@ fhir-forge/
 │   └── e2e/
 ├── secrets/              # Certs RNDS (.pfx) — nunca commitar
 ├── tools/                # validator_cli.jar
+├── proxyllm/
+│   ├── server.py           # proxy /v1/messages (mock FHIR ou Ollama)
+│   └── Dockerfile          # para docker compose --profile proxyllm
 ├── scripts/
 │   ├── bootstrap.sh
 │   ├── postgres-init.sh
 │   ├── generate_pptx.py    # gera apresentação PPTX (arquitetos)
 │   └── generate_docx.py    # gera documento DOCX (arquitetos)
+├── docs/
+│   ├── fhir-forge-arquitetura.pptx  # 17 slides
+│   └── fhir-forge-arquitetura.docx  # 15 capítulos
 ├── docker-compose.yml
 ├── pyproject.toml
 ├── Makefile
@@ -351,24 +357,29 @@ main  → tudo (incluindo e2e)   (< 20 min)
 |---------|-----|-----|
 | HAPI FHIR | http://localhost:8090/fhir | $validate, $expand, CRUD |
 | Snowstorm | http://localhost:8080/fhir | SNOMED CT terminology |
+| Elasticsearch | http://localhost:9200 | Backend Snowstorm (v7.17.24) |
 | Postgres | localhost:5432 | HAPI JPA, LangGraph, app data |
 | Redis | localhost:6379 | Dramatiq queue, cache |
 | MinIO | http://localhost:9000 | Artefatos S3-compatible |
-| Langfuse | http://localhost:3000 | LLM traces |
+| Langfuse | http://localhost:3000 | LLM traces (v2) |
+| ProxyLLM | http://localhost:9099 | Proxy /v1/messages — mock ou Ollama |
 
 ### Makefile (principais targets)
 ```bash
 make bootstrap       # setup único
 make up              # sobe stack
 make health          # checa todos os serviços
-make test            # pytest unit
+make test            # pytest unit (252 testes)
 make test-int        # pytest integration
+make test-e2e        # pytest e2e (requer stack + ANTHROPIC_API_KEY)
 make test-all        # tudo
 make lint            # ruff + mypy
 make fmt             # ruff format + fix
 make validate FILE=  # valida FHIR contra BR Core
 make api             # sobe FastAPI dev
 make worker          # sobe Dramatiq worker
+make proxy           # sobe ProxyLLM local (sem API key)
+make proxy-docker    # ProxyLLM via Docker
 make db-migrate      # Alembic upgrade head
 make docs            # gera PPTX + DOCX em docs/
 ```
@@ -904,9 +915,9 @@ Gate 9 de saída:
 
 ---
 
-## §11 — Status Final (Abril 2026)
+## §11 — Status Final (Abril 2026) — tag v2
 
-Todas as 9 fases do pipeline estão implementadas e com gates verdes.
+Todas as 9 fases implementadas com gates verdes. Pipeline e2e validado com Anthropic real + HAPI real.
 
 | Fase | Package/App | Status |
 |------|-------------|--------|
@@ -919,13 +930,20 @@ Todas as 9 fases do pipeline estão implementadas e com gates verdes.
 | 7 | `apps/worker` | Completo — Dramatiq actors, DLQ handler, idempotência Redis |
 | 8 | `packages/eval` | Completo — precision/recall, EvalRunner, relatório rich |
 | 9 | `packages/mcp_server` | Completo — 6 FastMCP tools (4 HAPI + 2 Snowstorm) |
+| E2E | `tests/e2e/` | 6/6 PASSED — OpenAPI → LangGraph → HAPI $validate → Bundle |
+| Infra | `proxyllm/` | ProxyLLM local /v1/messages (mock FHIR ou Ollama) |
 
-**Métricas do projeto:**
+**Métricas do projeto (v2):**
 
 - 252 testes unitários passando (< 1s cada)
+- 6 testes e2e passando (~113s, Anthropic real + HAPI real)
 - Cobertura: 91% global
 - Lint (ruff check): 0 erros
 - Type check (mypy strict): 0 erros
+- Stack Docker: 7 serviços validados (ES 7.17.24, Langfuse 2.x)
+
+**E2E validado:** 7 endpoints mapeados (Patient x3, Encounter x2, Observation x1, MedicationRequest x1).
+Fix node ativado automaticamente: corrigiu 4 recursos. Bundle final: 0 erros fatais no HAPI.
 
 **Para gerar documentação de arquitetura:**
 

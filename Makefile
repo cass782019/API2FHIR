@@ -136,6 +136,10 @@ test: ## Pytest unit
 test-int: ## Pytest integration (sobe testcontainers)
 	$(UV) run pytest -m "integration" tests/
 
+.PHONY: test-e2e
+test-e2e: ## Pytest e2e (requer stack Docker up + ANTHROPIC_API_KEY no .env)
+	$(UV) run pytest -m "e2e" tests/e2e/ -v -s
+
 .PHONY: test-all
 test-all: ## Pytest tudo (lento)
 	$(UV) run pytest tests/

@@ -176,7 +176,7 @@ def _capa(doc: Document) -> None:
         ("Autor",   "Cassiano Moralles"),
         ("Python",  "≥ 3.12"),
         ("FHIR",    "R4 + BR Core 1.0.0"),
-        ("Status",  "9/9 fases completas — 252 testes, 91% cobertura"),
+        ("Status",  "9/9 fases completas — 252 unit + 6 e2e, 91% cobertura — tag v2"),
     ]
     _table(doc, ["Campo", "Valor"], meta, col_widths=[2.0, 4.5])
     _hr(doc)
@@ -607,11 +607,12 @@ def _cap8_infra(doc: Document) -> None:
            [
                ["HAPI FHIR",     "hapiproject/hapi:v8.4.0-2",    "8090", "Validação FHIR, $validate, $expand, CRUD de recursos"],
                ["Snowstorm",     "snowstorm:7.5.0",              "8080", "Servidor SNOMED CT (find_concept, $translate, ECL)"],
-               ["Elasticsearch", "elasticsearch:8.11.1",         "9200", "Backend de índice do Snowstorm (obrigatório)"],
+               ["Elasticsearch", "elasticsearch:7.17.24",        "9200", "Backend de índice do Snowstorm — ES 7.x (Snowstorm 7.x usa RestHighLevelClient ES 7)"],
                ["PostgreSQL 16", "pgvector/pgvector:pg16",       "5432", "HAPI JPA, LangGraph checkpoints, dados da app"],
                ["Redis 7.4",     "redis:7.4-alpine",             "6379", "Broker Dramatiq, cache de terminologia"],
                ["MinIO",         "minio/minio:2025-09",          "9000/9001", "Armazenamento S3-compatible de artefatos"],
-               ["Langfuse 3.x",  "langfuse/langfuse:3",          "3000", "Observabilidade de LLMs — traces, métricas"],
+               ["Langfuse 2.x",  "langfuse/langfuse:2",          "3000", "Observabilidade de LLMs — Langfuse 2.x (v3 requer ClickHouse)"],
+               ["ProxyLLM",      "(local build)",                "9099", "Proxy /v1/messages para dev sem API key — roteia para Ollama ou mock FHIR"],
                ["FastAPI App",   "(local build)",                "8000", "Gateway REST — /convert, /health, /fhir, /mcp"],
                ["Dramatiq",      "(local)",                      "—",    "Workers assíncronos de conversão"],
            ],
@@ -830,7 +831,7 @@ def _cap13_testes(doc: Document) -> None:
                ["Unit",        "@pytest.mark.unit",        "< 1s cada",   "pytest, respx, unittest.mock, hypothesis", "≥ 80%"],
                ["Integration", "@pytest.mark.integration", "5–30s",       "testcontainers (Postgres + Redis + HAPI)", "≥ 80%"],
                ["Regression",  "@pytest.mark.regression",  "5–15s",       "deepdiff, golden files em data/golden/",  "—"],
-               ["E2E",         "@pytest.mark.e2e",          "30–120s",     "Docker stack completa, curl, pytest",      "—"],
+               ["E2E",         "@pytest.mark.e2e",          "30–120s",     "Anthropic API real + HAPI real (6 testes validados)",      "—"],
                ["RNDS",        "@pytest.mark.rnds",         "variável",    "Sandbox RNDS (requer credenciais reais)",  "—"],
            ],
            col_widths=[1.6, 2.4, 1.5, 2.8, 1.2])
@@ -844,11 +845,12 @@ def _cap13_testes(doc: Document) -> None:
         "Um arquivo tests/unit/test_{módulo}.py por módulo",
     ])
 
-    _h(doc, "13.3 Métricas Atuais (Abril 2026)", level=2)
+    _h(doc, "13.3 Métricas Atuais (tag v2, Abril 2026)", level=2)
     _table(doc,
            ["Métrica", "Valor"],
            [
                ["Testes unitários passando", "252"],
+               ["Testes e2e validados",       "6 (pipeline real Anthropic + HAPI)"],
                ["Cobertura de código",       "91%"],
                ["ruff check",                "0 erros"],
                ["mypy strict",               "0 erros"],
@@ -913,10 +915,12 @@ def _cap15_operacoes(doc: Document) -> None:
                ["make health",       "Verifica endpoints de todos os serviços"],
                ["make test",         "Roda 252 testes unitários"],
                ["make test-int",     "Testes de integração (testcontainers)"],
+               ["make test-e2e",     "Testes e2e (stack up + ANTHROPIC_API_KEY)"],
                ["make lint",         "ruff check + mypy strict"],
                ["make fmt",          "ruff format + fix automático"],
                ["make api",          "FastAPI em modo dev (reload)"],
                ["make worker",       "Dramatiq worker"],
+               ["make proxy",        "ProxyLLM local (porta 9099) — dev sem API key"],
                ["make docs",         "Gera PPTX + DOCX de arquitetura em docs/"],
                ["make validate",     "Valida FHIR local via validator_cli.jar"],
                ["make db-migrate",   "Alembic upgrade head"],
@@ -963,7 +967,7 @@ def _apendices(doc: Document) -> None:
            [
                ["anthropic",          "0.50",    "Cliente LLM Claude (Anthropic e Bedrock)"],
                ["fastapi",            "0.115",   "Framework web assíncrono"],
-               ["langfuse",           "3.0",     "Rastreamento de chamadas LLM"],
+               ["langfuse",           "2.x",     "Rastreamento de chamadas LLM (v3 requer ClickHouse)"],
                ["langgraph",          "0.6",     "Agente de conversão (StateGraph)"],
                ["langgraph-checkpoint-postgres","3.0","Persistência de estado LangGraph"],
                ["openapi-pydantic",   "0.5",     "Parsing tipado de specs OpenAPI"],
