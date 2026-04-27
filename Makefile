@@ -148,6 +148,15 @@ cov: ## Cobertura HTML
 # ═════════════════════════════════════════════════════════════
 # APPS — execução
 # ═════════════════════════════════════════════════════════════
+.PHONY: proxy
+proxy: ## Sobe ProxyLLM local (porta 9099) — mock FHIR ou Ollama como backend
+	$(UV) run python proxyllm/server.py
+
+.PHONY: proxy-docker
+proxy-docker: ## Sobe ProxyLLM via Docker (profile proxyllm)
+	$(COMPOSE) --profile proxyllm up -d proxyllm
+	@echo "$(GREEN)✓$(RESET) ProxyLLM em http://localhost:9099"
+
 .PHONY: api
 api: ## Sobe FastAPI gateway em modo dev (reload)
 	$(UV) run uvicorn apps.api.main:app --reload --host 0.0.0.0 --port 8000

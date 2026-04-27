@@ -226,6 +226,35 @@ services:
     networks:
       - forge-net
 
+  # ─────────────────────────────────────────────────────────────
+  # ProxyLLM — proxy local que expõe /v1/messages no formato
+  # Anthropic e roteia para Ollama (se disponível) ou mock FHIR.
+  # Configure no .env:  ANTHROPIC_BASE_URL=http://localhost:9099
+  #                     ANTHROPIC_API_KEY=proxyllm-local
+  # ─────────────────────────────────────────────────────────────
+  proxyllm:
+    build:
+      context: .
+      dockerfile: proxyllm/Dockerfile
+    container_name: forge-proxyllm
+    restart: unless-stopped
+    profiles: ["proxyllm"]   # sobe com: docker compose --profile proxyllm up -d
+    environment:
+      OLLAMA_URL: ${OLLAMA_URL:-http://host.docker.internal:11434}
+      OLLAMA_MODEL: ${OLLAMA_MODEL:-llama3.2:3b}
+      PROXYLLM_PORT: "9099"
+    ports:
+      - "${PROXYLLM_PORT:-9099}:9099"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:9099/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    networks:
+      - forge-net
+
 volumes:
   postgres-data:
   redis-data:
