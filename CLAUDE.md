@@ -915,7 +915,7 @@ Gate 9 de saída:
 
 ---
 
-## §11 — Status Final (Abril 2026) — tag v2
+## §11 — Status Final (Abril 2026) — tag v2.1
 
 Todas as 9 fases implementadas com gates verdes. Pipeline e2e validado com Anthropic real + HAPI real.
 
@@ -933,17 +933,30 @@ Todas as 9 fases implementadas com gates verdes. Pipeline e2e validado com Anthr
 | E2E | `tests/e2e/` | 6/6 PASSED — OpenAPI → LangGraph → HAPI $validate → Bundle |
 | Infra | `proxyllm/` | ProxyLLM local /v1/messages (mock FHIR ou Ollama) |
 
-**Métricas do projeto (v2):**
+**Métricas do projeto (v2.1):**
 
-- 252 testes unitários passando (< 1s cada)
+- 289 testes unitários passando (< 1s cada)
+- 3 testes integration novos (Bundle/$validate contra HAPI testcontainer)
+- 7 testes regression (golden pairs + invariantes estruturais)
 - 6 testes e2e passando (~113s, Anthropic real + HAPI real)
-- Cobertura: 91% global
+- Cobertura: 91% global (mantida)
 - Lint (ruff check): 0 erros
 - Type check (mypy strict): 0 erros
 - Stack Docker: 7 serviços validados (ES 7.17.24, Langfuse 2.x)
 
 **E2E validado:** 7 endpoints mapeados (Patient x3, Encounter x2, Observation x1, MedicationRequest x1).
 Fix node ativado automaticamente: corrigiu 4 recursos. Bundle final: 0 erros fatais no HAPI.
+
+**Mudanças v2 → v2.1 (2026-04-28):**
+
+- `bundle_node`: `entry.fullUrl` agora gera UUID v4 real (antes concatenava `urn:uuid:` + id, violando FHIR R4 e gerando 16 erros fatais no `Bundle/$validate`).
+- `bundle_node`: injeta narrativa mínima (`text.div`) em DomainResources sem narrativa, fechando os warnings `dom-6`.
+- `mapping_node`: `id` do recurso é derivado de `slugify(operation_id)` com dedup (`-2`, `-3`); LLM-id é descartado.
+- Sanitizador best-effort de mojibake (`packages/fhir_forge/src/fhir_forge/nodes/_helpers.py`) aplicado em `mapping_node` e `fix_node`.
+- System prompt de `mapping_node` e `fix_node` reforçado: "Use proper UTF-8; never produce mojibake".
+- Regression test endurecido: 4 invariantes estruturais (`fullUrl` UUID v4, ids únicos, narrativa, sem mojibake) — cada um amarrado a um bug histórico.
+- Smoke real do spec `jsonAPI/schedules_1.json` (1.81 MB, 19 endpoints) passa em `Bundle/$validate` com 0 erros fatais e 0 warnings dom-6.
+- Tests novos: `test_fhir_forge_helpers.py`, `test_bundle_node.py`, `test_fix_node.py`, `test_bundle_validation.py` (integration).
 
 **Para gerar documentação de arquitetura:**
 
