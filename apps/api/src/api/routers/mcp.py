@@ -19,8 +19,8 @@ def mount_mcp(app: Any) -> None:
 
         mcp_app = mcp.streamable_http_app()
         app.mount("/mcp", mcp_app)
-    except ImportError:
+    except (ImportError, AttributeError) as exc:
         import structlog
 
         log = structlog.get_logger(__name__)
-        log.warning("mcp_server_not_available")
+        log.warning("mcp_server_not_available", error=str(exc))
