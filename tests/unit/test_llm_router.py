@@ -77,7 +77,6 @@ def test_bedrock_route_selected_when_configured(mock_settings: MagicMock) -> Non
 @pytest.mark.unit
 def test_get_anthropic_client_with_valid_key(mock_settings: MagicMock) -> None:
     import anthropic
-
     from core.llm_router import LLMRouter
 
     router = LLMRouter(mock_settings)

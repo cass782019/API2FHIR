@@ -61,9 +61,8 @@ def test_settings_override_hapi_url_via_env(monkeypatch: pytest.MonkeyPatch) -> 
 
 @pytest.mark.unit
 def test_settings_secret_fields_are_secret_str() -> None:
-    from pydantic import SecretStr
-
     from core.settings import Settings
+    from pydantic import SecretStr
 
     s = Settings()
     assert isinstance(s.anthropic_api_key, SecretStr)

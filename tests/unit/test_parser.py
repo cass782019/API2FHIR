@@ -7,7 +7,6 @@ import yaml
 from hypothesis import given, settings
 from hypothesis import strategies as st
 
-
 OAS3_MINIMAL = {
     "openapi": "3.0.3",
     "info": {"title": "Test API", "version": "1.0.0"},
