@@ -188,3 +188,71 @@ async def test_mapping_node_unknown_operation_id_ignored() -> None:
     assert result["fhir_resources"] == []
     # LLM should NOT have been called
     client.messages.create.assert_not_called()
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_mapping_node_overrides_id_with_slug() -> None:
+    """LLM-provided id is overwritten by a slug derived from operation_id."""
+    from fhir_forge.nodes.mapping_node import mapping_node
+
+    state = _make_state(
+        [Endpoint(path="/x", method="POST", operation_id="bookTime", tags=[])]
+    )
+    client = _make_mock_client({"resourceType": "Appointment", "id": "whatever-LLM-said"})
+    result = await mapping_node(state, client=client, model="test-model")
+    assert len(result["fhir_resources"]) == 1
+    assert result["fhir_resources"][0]["id"] == "booktime"
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_mapping_node_dedupes_colliding_ids() -> None:
+    """Endpoints whose slugified ids would collide get -2, -3 suffixes."""
+    from fhir_forge.nodes.mapping_node import mapping_node
+
+    # Distinct operation_ids that all slugify to the same value ("booktime"):
+    eps = [
+        Endpoint(path="/a", method="POST", operation_id="bookTime", tags=[]),
+        Endpoint(path="/b", method="POST", operation_id="BOOKTIME", tags=[]),
+        Endpoint(path="/c", method="POST", operation_id="BookTime", tags=[]),
+    ]
+    state = _make_state(eps)
+
+    res = {"resourceType": "Appointment", "id": "ignored"}
+    msgs = []
+    for _ in range(3):
+        tb = MagicMock()
+        tb.text = json.dumps(res)
+        msg = MagicMock()
+        msg.content = [tb]
+        msgs.append(msg)
+
+    client = MagicMock()
+    client.messages = MagicMock()
+    client.messages.create = AsyncMock(side_effect=msgs)
+
+    result = await mapping_node(state, client=client, model="test-model")
+    ids = [r["id"] for r in result["fhir_resources"]]
+    assert ids == ["booktime", "booktime-2", "booktime-3"]
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_mapping_node_repairs_mojibake_in_llm_output() -> None:
+    from fhir_forge.nodes.mapping_node import mapping_node
+
+    state = _make_state(
+        [Endpoint(path="/p", method="POST", operation_id="getDoctor", tags=[])]
+    )
+    client = _make_mock_client(
+        {
+            "resourceType": "Practitioner",
+            "id": "p",
+            "name": [{"family": "JoÃ£o", "given": ["mÃ©dico"]}],
+        }
+    )
+    result = await mapping_node(state, client=client, model="test-model")
+    name = result["fhir_resources"][0]["name"][0]
+    assert name["family"] == "João"
+    assert name["given"] == ["médico"]

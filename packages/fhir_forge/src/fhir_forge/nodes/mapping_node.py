@@ -7,6 +7,8 @@ from typing import TYPE_CHECKING, Any
 import structlog
 from core.exceptions import MappingError
 
+from fhir_forge.nodes._helpers import sanitize_resource, slugify
+
 if TYPE_CHECKING:
     import anthropic
 
@@ -23,6 +25,8 @@ Rules:
 - Return ONLY a JSON object — no markdown fences, no explanation.
 - The JSON must include "resourceType" and "id".
 - Use realistic but synthetic data (no real CPFs or CNSs).
+- Use proper UTF-8 for accented characters (ã, é, ç, ó, í, ú).
+  Never produce mojibake sequences such as "Ã£", "Ã©", "Ã§", "Ã³".
 - For Patient: include identifier array with CPF \
   (system "https://rnds.saude.gov.br/fhir/NamingSystem/cpf") and \
   CNS (system "https://rnds.saude.gov.br/fhir/NamingSystem/cns").
@@ -166,6 +170,7 @@ async def mapping_node(
 
     endpoint_map = {ep.operation_id: ep for ep in spec.endpoints}
     resources: list[dict[str, Any]] = []
+    seen_ids: set[str] = set()
 
     for op_id in op_ids:
         ep = endpoint_map.get(op_id)
@@ -173,12 +178,32 @@ async def mapping_node(
             continue
         try:
             resource = await _map_endpoint(client, model, ep)
-            # Skip Basic placeholders
-            if resource.get("resourceType") != "Basic":
-                resources.append(resource)
-                log.info("mapped_endpoint", op_id=op_id, resource_type=resource["resourceType"])
         except MappingError as exc:
             log.warning("mapping_failed", op_id=op_id, reason=str(exc))
+            continue
+
+        if resource.get("resourceType") == "Basic":
+            continue
+
+        # Repair mojibake produced by the LLM in display fields.
+        resource = sanitize_resource(resource)
+
+        # Force unique, slug-derived id (overrides whatever the LLM picked).
+        base_id = slugify(op_id) or "resource"
+        rid, n = base_id, 1
+        while rid in seen_ids:
+            n += 1
+            rid = f"{base_id}-{n}"
+        seen_ids.add(rid)
+        resource["id"] = rid
+
+        resources.append(resource)
+        log.info(
+            "mapped_endpoint",
+            op_id=op_id,
+            resource_id=rid,
+            resource_type=resource["resourceType"],
+        )
 
     return {
         "fhir_resources": resources,
