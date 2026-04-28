@@ -91,3 +91,32 @@ def test_empty_resources_yields_empty_entries() -> None:
 
     out = bundle_node(_state([]))
     assert out["_bundle"]["entry"] == []
+
+
+@pytest.mark.unit
+def test_narrative_added_when_missing() -> None:
+    from fhir_forge.nodes.bundle_node import bundle_node
+
+    out = bundle_node(_state([{"resourceType": "Patient", "id": "p1"}]))
+    res = out["_bundle"]["entry"][0]["resource"]
+    assert res["text"]["status"] == "generated"
+    assert "<div" in res["text"]["div"]
+    assert "Patient" in res["text"]["div"]
+
+
+@pytest.mark.unit
+def test_narrative_preserved_when_present() -> None:
+    from fhir_forge.nodes.bundle_node import bundle_node
+
+    pre = {
+        "resourceType": "Patient",
+        "id": "p1",
+        "text": {
+            "status": "additional",
+            "div": '<div xmlns="http://www.w3.org/1999/xhtml">Original</div>',
+        },
+    }
+    out = bundle_node(_state([pre]))
+    res = out["_bundle"]["entry"][0]["resource"]
+    assert res["text"]["status"] == "additional"
+    assert "Original" in res["text"]["div"]
