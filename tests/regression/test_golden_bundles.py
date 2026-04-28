@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import pathlib
+import re
 from typing import Any
 from unittest.mock import AsyncMock, MagicMock
 
@@ -9,6 +10,49 @@ import pytest
 
 GOLDEN_SPEC_DIR = pathlib.Path(__file__).parent.parent.parent / "data" / "golden" / "swagger_specs"
 GOLDEN_BUNDLE_DIR = pathlib.Path(__file__).parent.parent.parent / "data" / "golden" / "fhir_bundles"
+
+_UUID_V4_RE = re.compile(
+    r"^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+)
+
+_MOJIBAKE_MARKERS = ("Ã£", "Ã©", "Ã§", "Ã³", "Ã­", "Ãº")
+
+
+def _assert_structural_invariants(bundle: dict[str, Any]) -> None:
+    """Bug-regression guard: each invariant maps to a specific past bug.
+
+    - fullUrl UUID v4: regression of bundle_node bug fixed in v2.1
+    - unique resource ids: regression of mapping_node id-collision bug
+    - generated narrative: regression of dom-6 cleanup
+    - no mojibake markers: regression of UTF-8 sanitizer
+    """
+    entries = bundle.get("entry", [])
+
+    # fullUrl: UUID v4 lowercase
+    bad_urls = [
+        e["fullUrl"] for e in entries if not _UUID_V4_RE.match(e.get("fullUrl", ""))
+    ]
+    assert not bad_urls, (
+        f"Invalid fullUrls (expected urn:uuid:<UUIDv4>): {bad_urls[:3]}"
+    )
+
+    # ids únicos
+    ids = [e["resource"].get("id", "") for e in entries]
+    dups = sorted({i for i in ids if ids.count(i) > 1})
+    assert not dups, f"Duplicate resource ids in bundle: {dups}"
+
+    # narrativa presente em cada DomainResource
+    missing_narr = [
+        e["resource"].get("id", "?")
+        for e in entries
+        if not (e["resource"].get("text") or {}).get("div")
+    ]
+    assert not missing_narr, f"Resources without text.div: {missing_narr[:3]}"
+
+    # zero mojibake nos campos string
+    blob = json.dumps(bundle, ensure_ascii=False)
+    found = [m for m in _MOJIBAKE_MARKERS if m in blob]
+    assert not found, f"Mojibake markers found in bundle: {found}"
 
 # Fields ignored in semantic diff (generated at runtime; not meaningful for regression)
 _IGNORE_PATHS = {
@@ -104,6 +148,8 @@ async def test_golden_bundle_regression(spec_path: pathlib.Path, bundle_path: pa
 
     assert bundle["resourceType"] == "Bundle", "Output must be a Bundle"
     assert len(bundle.get("entry", [])) > 0, "Bundle must have at least one entry"
+
+    _assert_structural_invariants(bundle)
 
     ok, diff = _semantic_equal(bundle, expected_bundle)
     assert ok, f"Semantic regression detected for {spec_path.name}:\n{diff}"
