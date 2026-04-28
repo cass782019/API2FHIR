@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import datetime as dt
+import uuid
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
@@ -20,8 +21,8 @@ def bundle_node(state: ConversionState) -> dict[str, Any]:
         resources = resources + list(state["invalid_resources"])
 
     entries: list[dict[str, Any]] = [
-        {"fullUrl": f"urn:uuid:{r.get('id', i)}", "resource": r}
-        for i, r in enumerate(resources)
+        {"fullUrl": f"urn:uuid:{uuid.uuid4()}", "resource": r}
+        for r in resources
     ]
 
     timestamp = dt.datetime.now(tz=dt.UTC).isoformat()
