@@ -27,7 +27,7 @@ AMBER        = RGBColor(0xD9, 0x77, 0x06)
 LIGHT_BLUE   = RGBColor(0xDB, 0xEA, 0xFB)
 LIGHT_GREEN  = RGBColor(0xD1, 0xF5, 0xE4)
 
-FOOTER_TEXT  = "FHIR-Forge v2  |  Abril 2026  |  Apache-2.0  |  Cassiano Moralles"
+FOOTER_TEXT  = "FHIR-Forge v2.1  |  Abril 2026  |  Apache-2.0  |  Cassiano Moralles"
 
 
 # ── Helpers ──────────────────────────────────────────────────────────────────
@@ -674,7 +674,7 @@ def slide_14_eval(prs: Presentation) -> None:
 
 def slide_15_testes(prs: Presentation) -> None:
     slide = _new_slide(prs)
-    _title_bar(slide, "Estratégia de Testes: 252 Unit + 6 E2E, 91% de Cobertura")
+    _title_bar(slide, "Estratégia de Testes: 289 Unit + 3 Integration + 7 Regression + 6 E2E, 91% Cobertura")
 
     headers = ["Camada", "Marker", "Ferramentas", "O que testa", "Cobertura mín."]
     rows = [
@@ -702,7 +702,7 @@ def slide_15_testes(prs: Presentation) -> None:
                  size=10, color=DARK_TEXT)
 
     # KPIs
-    kpis = [("252", "testes unit"), ("91%", "cobertura"), ("0", "erros ruff"), ("0", "erros mypy")]
+    kpis = [("289", "testes unit"), ("91%", "cobertura"), ("0", "erros ruff"), ("0", "erros mypy")]
     for i, (val, label) in enumerate(kpis):
         left = 0.25 + i * 3.3
         _box(slide, left, 5.55, 3.1, 0.9, fill=ACCENT_GREEN, border=ACCENT_GREEN)
@@ -755,8 +755,8 @@ def slide_17_resultados(prs: Presentation) -> None:
     _title_bar(slide, "Resultados Atuais e Roadmap")
 
     kpis = [
-        ("252", "testes unit passando"),
-        ("6", "testes e2e validados"),
+        ("289", "testes unit passando"),
+        ("3", "testes integration"),
         ("91%", "cobertura de código"),
         ("0", "erros lint/mypy"),
     ]

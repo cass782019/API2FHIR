@@ -176,7 +176,7 @@ def _capa(doc: Document) -> None:
         ("Autor",   "Cassiano Moralles"),
         ("Python",  "≥ 3.12"),
         ("FHIR",    "R4 + BR Core 1.0.0"),
-        ("Status",  "9/9 fases completas — 252 unit + 6 e2e, 91% cobertura — tag v2"),
+        ("Status",  "9/9 fases completas — 289 unit + 3 integration + 7 regression + 6 e2e, 91% cobertura — tag v2.1"),
     ]
     _table(doc, ["Campo", "Valor"], meta, col_widths=[2.0, 4.5])
     _hr(doc)
@@ -845,11 +845,13 @@ def _cap13_testes(doc: Document) -> None:
         "Um arquivo tests/unit/test_{módulo}.py por módulo",
     ])
 
-    _h(doc, "13.3 Métricas Atuais (tag v2, Abril 2026)", level=2)
+    _h(doc, "13.3 Métricas Atuais (tag v2.1, Abril 2026)", level=2)
     _table(doc,
            ["Métrica", "Valor"],
            [
-               ["Testes unitários passando", "252"],
+               ["Testes unitários passando", "289"],
+               ["Testes integration (HAPI testcontainer)", "3 (Bundle/$validate sem fatais nem dom-6)"],
+               ["Testes regression",          "7 (golden pairs + invariantes estruturais)"],
                ["Testes e2e validados",       "6 (pipeline real Anthropic + HAPI)"],
                ["Cobertura de código",       "91%"],
                ["ruff check",                "0 erros"],
@@ -913,7 +915,7 @@ def _cap15_operacoes(doc: Document) -> None:
                ["make bootstrap",    "Setup completo de zero (idempotente)"],
                ["make up",           "Sobe toda a stack Docker"],
                ["make health",       "Verifica endpoints de todos os serviços"],
-               ["make test",         "Roda 252 testes unitários"],
+               ["make test",         "Roda 289 testes unitários"],
                ["make test-int",     "Testes de integração (testcontainers)"],
                ["make test-e2e",     "Testes e2e (stack up + ANTHROPIC_API_KEY)"],
                ["make lint",         "ruff check + mypy strict"],
