@@ -2,7 +2,7 @@
 
 Pacote mínimo executável para destravar a **Fase 0** do `CLAUDE.md` (§9). Coloque estes arquivos na raiz do repositório vazio, rode `make bootstrap`, e em ~10 minutos você tem stack completa rodando localmente.
 
-**Estado atual (Abril 2026) — tag v2:** Todas as 9 fases completas + testes e2e validados com pipeline real (Anthropic + HAPI). 252 testes unitários + 6 e2e passando, 91% de cobertura, ruff + mypy strict OK.
+**Estado atual (Abril 2026) — tag v2.1:** Todas as 9 fases completas + correções de qualidade do output FHIR. **289 unit + 3 integration + 7 regression + 6 e2e passando**, 91% de cobertura, ruff + mypy strict OK. Smoke real do `jsonAPI/schedules_1.json` (1.81 MB, 19 endpoints): 0 erros fatais e 0 warnings dom-6 no `Bundle/$validate`. Ver [CHANGELOG.md](CHANGELOG.md) para o que mudou em v2.1.
 
 > **Versões pinadas em abril/2026**: HAPI FHIR 8.4.0-2 · Snowstorm 7.5.0 · Elasticsearch **7.17.24** · Postgres 16 (pgvector) · Redis 7.4 · Minio (release 2025-09) · Langfuse **2.x** · Adminer 4.8.1.
 >
@@ -94,7 +94,8 @@ make logs      # tail -f de tudo
 
 ```bash
 make health                              # verifica saúde dos 7 serviços
-make test                                # 252 testes unitários
+make test                                # 289 testes unitários
+make test-int                            # 3 testes integration (HAPI testcontainer ~90s 1ª run)
 make test-e2e                            # 6 testes e2e (requer ANTHROPIC_API_KEY + stack up)
 make api                                 # FastAPI em http://localhost:8000
 make worker                              # Dramatiq worker
@@ -156,7 +157,7 @@ curl http://localhost:8090/fhir/StructureDefinition?url=http://hl7.org.br/fhir/r
 
 ---
 
-## O que está implementado (tag v2)
+## O que está implementado (tag v2.1)
 
 Todos os packages e apps implementados com gates verdes. Pipeline e2e validado com Anthropic real + HAPI real:
 
