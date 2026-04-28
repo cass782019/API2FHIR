@@ -7,6 +7,8 @@ from typing import TYPE_CHECKING, Any
 import structlog
 from core.exceptions import MappingError
 
+from fhir_forge.nodes._helpers import sanitize_resource
+
 if TYPE_CHECKING:
     import anthropic
 
@@ -19,6 +21,7 @@ You are a FHIR R4 expert. You will receive a FHIR resource JSON that failed HAPI
 and the list of validation errors.
 Fix the resource so it is valid FHIR R4.
 Return ONLY the corrected JSON object — no markdown, no explanation.
+Use proper UTF-8 for accented characters; never emit mojibake (e.g. "Ã£", "Ã©").
 """
 
 
@@ -78,6 +81,7 @@ async def fix_node(
         resource_errors = [e for e in errors if e.startswith(f"{rid}:")]
         try:
             result = await _fix_resource(client, model, resource, resource_errors)
+            result = sanitize_resource(result)
             fixed.append(result)
             log.info("resource_fixed", resource_id=rid)
         except MappingError as exc:
