@@ -12,6 +12,7 @@ dependencies = [
     "fhir-forge-core",
     "fhir-forge-fhir-forge",
     "fhir-forge-connectors",
+    "fhir-forge-spec-inferer",
 ]
 
 [build-system]
@@ -25,3 +26,4 @@ packages = ["src/api"]
 fhir-forge-core = { workspace = true }
 fhir-forge-fhir-forge = { workspace = true }
 fhir-forge-connectors = { workspace = true }
+fhir-forge-spec-inferer = { workspace = true }

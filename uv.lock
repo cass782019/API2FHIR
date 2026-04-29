@@ -17,8 +17,10 @@ members = [
     "fhir-forge-eval",
     "fhir-forge-fhir-forge",
     "fhir-forge-mcp-server",
+    "fhir-forge-spec-inferer",
     "fhir-forge-swagger-lens",
     "fhir-forge-term-mapper",
+    "fhir-forge-web",
     "fhir-forge-worker",
 ]
 
@@ -910,6 +912,7 @@ dependencies = [
     { name = "fastapi" },
     { name = "fastmcp" },
     { name = "fhir-resources" },
+    { name = "genson" },
     { name = "httpx" },
     { name = "langfuse" },
     { name = "langgraph" },
@@ -973,6 +976,7 @@ requires-dist = [
     { name = "fastapi", specifier = ">=0.115" },
     { name = "fastmcp", specifier = ">=3.0" },
     { name = "fhir-resources", specifier = ">=7.1.0" },
+    { name = "genson", specifier = ">=1.3" },
     { name = "httpx", specifier = ">=0.28" },
     { name = "langfuse", specifier = ">=3.0" },
     { name = "langgraph", specifier = ">=0.6" },
@@ -1035,6 +1039,7 @@ dependencies = [
     { name = "fhir-forge-connectors" },
     { name = "fhir-forge-core" },
     { name = "fhir-forge-fhir-forge" },
+    { name = "fhir-forge-spec-inferer" },
     { name = "httpx" },
     { name = "opentelemetry-api" },
     { name = "opentelemetry-instrumentation-fastapi" },
@@ -1048,6 +1053,7 @@ requires-dist = [
     { name = "fhir-forge-connectors", editable = "packages/connectors" },
     { name = "fhir-forge-core", editable = "packages/core" },
     { name = "fhir-forge-fhir-forge", editable = "packages/fhir_forge" },
+    { name = "fhir-forge-spec-inferer", editable = "packages/spec_inferer" },
     { name = "httpx", specifier = ">=0.28" },
     { name = "opentelemetry-api", specifier = ">=1.28" },
     { name = "opentelemetry-instrumentation-fastapi", specifier = ">=0.49b0" },
@@ -1175,6 +1181,23 @@ requires-dist = [
 ]
 
 [[package]]
+name = "fhir-forge-spec-inferer"
+version = "0.1.0"
+source = { editable = "packages/spec_inferer" }
+dependencies = [
+    { name = "genson" },
+    { name = "openapi-spec-validator" },
+    { name = "pyyaml" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "genson", specifier = ">=1.3" },
+    { name = "openapi-spec-validator", specifier = ">=0.7" },
+    { name = "pyyaml", specifier = ">=6.0" },
+]
+
+[[package]]
 name = "fhir-forge-swagger-lens"
 version = "0.1.0"
 source = { editable = "packages/swagger_lens" }
@@ -1209,6 +1232,11 @@ requires-dist = [
     { name = "httpx", specifier = ">=0.28" },
     { name = "redis", specifier = ">=5.2" },
 ]
+
+[[package]]
+name = "fhir-forge-web"
+version = "0.1.0"
+source = { editable = "apps/web" }
 
 [[package]]
 name = "fhir-forge-worker"
@@ -1273,6 +1301,15 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/e1/cf/b50ddf667c15276a9ab15a70ef5f257564de271957933ffea49d2cdbcdfb/fsspec-2026.3.0.tar.gz", hash = "sha256:1ee6a0e28677557f8c2f994e3eea77db6392b4de9cd1f5d7a9e87a0ae9d01b41", size = 313547, upload-time = "2026-03-27T19:11:14.892Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/d5/1f/5f4a3cd9e4440e9d9bc78ad0a91a1c8d46b4d429d5239ebe6793c9fe5c41/fsspec-2026.3.0-py3-none-any.whl", hash = "sha256:d2ceafaad1b3457968ed14efa28798162f1638dbb5d2a6868a2db002a5ee39a4", size = 202595, upload-time = "2026-03-27T19:11:13.595Z" },
+]
+
+[[package]]
+name = "genson"
+version = "1.3.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/c5/cf/2303c8ad276dcf5ee2ad6cf69c4338fd86ef0f471a5207b069adf7a393cf/genson-1.3.0.tar.gz", hash = "sha256:e02db9ac2e3fd29e65b5286f7135762e2cd8a986537c075b06fc5f1517308e37", size = 34919, upload-time = "2024-05-15T22:08:49.123Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/f8/5c/e226de133afd8bb267ec27eead9ae3d784b95b39a287ed404caab39a5f50/genson-1.3.0-py3-none-any.whl", hash = "sha256:468feccd00274cc7e4c09e84b08704270ba8d95232aa280f65b986139cec67f7", size = 21470, upload-time = "2024-05-15T22:08:47.056Z" },
 ]
 
 [[package]]
