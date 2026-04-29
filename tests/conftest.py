@@ -141,6 +141,20 @@ def _patch_settings_from_containers(
             os.environ[key] = val
 
 
+# ── FastAPI test client ───────────────────────────────────────────────────────
+
+@pytest.fixture
+async def api_client():
+    """AsyncClient pré-configurado contra o app FastAPI (sem rede)."""
+    import httpx
+
+    from api.main import app
+
+    transport = httpx.ASGITransport(app=app)
+    async with httpx.AsyncClient(transport=transport, base_url="http://test") as c:
+        yield c
+
+
 # ── Pytest markers ────────────────────────────────────────────────────────────
 
 def pytest_configure(config: pytest.Config) -> None:

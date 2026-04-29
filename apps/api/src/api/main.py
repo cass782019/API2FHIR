@@ -13,6 +13,9 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from api.routers import convert, fhir, health
 from api.routers.mcp import mount_mcp
+from api.routers.v1 import detect as v1_detect
+from api.routers.v1 import infer as v1_infer
+from api.routers.v1 import validate as v1_validate
 
 log = structlog.get_logger(__name__)
 
@@ -74,6 +77,11 @@ def create_app() -> FastAPI:
     app.include_router(health.router)
     app.include_router(convert.router)
     app.include_router(fhir.router)
+
+    # v1 — versioned routes (atomic pipeline). Legacy routes remain intact.
+    app.include_router(v1_detect.router, prefix="/v1")
+    app.include_router(v1_infer.router, prefix="/v1")
+    app.include_router(v1_validate.router, prefix="/v1")
 
     return app
 
