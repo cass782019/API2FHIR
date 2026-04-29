@@ -13,6 +13,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from api.routers import convert, fhir, health
 from api.routers.mcp import mount_mcp
+from api.routers.v1 import convert as v1_convert
 from api.routers.v1 import detect as v1_detect
 from api.routers.v1 import infer as v1_infer
 from api.routers.v1 import jobs as v1_jobs
@@ -84,6 +85,7 @@ def create_app() -> FastAPI:
     app.include_router(v1_infer.router, prefix="/v1")
     app.include_router(v1_validate.router, prefix="/v1")
     app.include_router(v1_jobs.router, prefix="/v1")
+    app.include_router(v1_convert.router, prefix="/v1")
 
     return app
 

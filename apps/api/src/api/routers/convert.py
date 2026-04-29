@@ -29,6 +29,11 @@ async def convert_spec(body: ConvertRequest) -> JobResponse:
     background job (returns immediately with a job_id). Otherwise the
     conversion runs synchronously and the bundle is returned in the response.
     """
+    return await _run_conversion(body)
+
+
+async def _run_conversion(body: ConvertRequest) -> JobResponse:
+    """Pure conversion logic — callable from /convert and /v1/convert."""
     try:
         spec = parse_spec(body.spec.encode(), fmt="auto")
     except Exception as exc:
@@ -41,7 +46,9 @@ async def convert_spec(body: ConvertRequest) -> JobResponse:
 
     if body.options.async_mode:
         try:
-            from worker.actors.conversion import convert_spec_actor  # type: ignore[import-not-found]
+            from worker.actors.conversion import (
+                convert_spec_actor,  # type: ignore[import-not-found]
+            )
 
             convert_spec_actor.send(job_id, body.spec)
             return JobResponse(job_id=job_id, status="pending")

@@ -1,0 +1,19 @@
+{
+  "naturalPersonCode": "667",
+  "name": "Andre Luiz Cornetet",
+  "birthDate": "1991-04-15",
+  "gender": "MALE",
+  "maritalStatus": "MARRIED",
+  "blood": "A",
+  "personType": "PATIENT",
+  "active": true,
+  "height": 170.0,
+  "weight": 70.0,
+  "taxpayerId": null,
+  "civilId": null,
+  "establishment": {
+    "id": 1,
+    "commercialName": "CEL - Hospital Geral",
+    "status": "ACTIVE"
+  }
+}
