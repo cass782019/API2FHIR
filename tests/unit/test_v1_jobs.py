@@ -1,18 +1,34 @@
 from __future__ import annotations
 
 import json
-from unittest.mock import MagicMock, patch
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
+from redis.asyncio import Redis as AsyncRedis
 
 
 def _mock_redis(*, result: str | None = None, lock: str | None = None) -> MagicMock:
-    r = MagicMock()
-    r.get.side_effect = lambda key: (
-        result if key.startswith("worker:result:") else
-        lock if key.startswith("worker:lock:") else None
-    )
+    r = MagicMock(spec=AsyncRedis)
+
+    async def _get(key: str) -> str | None:
+        if key.startswith("worker:result:"):
+            return result
+        if key.startswith("worker:lock:"):
+            return lock
+        return None
+
+    r.get = _get
+    r.set = AsyncMock(return_value=True)
     return r
+
+
+@pytest.mark.unit
+def test_redis_factory_returns_async_redis() -> None:
+    """_redis() deve retornar instância AsyncRedis (não Redis síncrono)."""
+    from api.routers.v1.jobs import _redis
+
+    r = _redis()
+    assert isinstance(r, AsyncRedis)
 
 
 @pytest.mark.unit

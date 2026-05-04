@@ -14,10 +14,14 @@ from fastapi.middleware.cors import CORSMiddleware
 from api.routers import convert, fhir, health
 from api.routers.mcp import mount_mcp
 from api.routers.v1 import convert as v1_convert
+from api.routers.v1 import delete_resources as v1_delete_resources
 from api.routers.v1 import detect as v1_detect
+from api.routers.v1 import fetch_url as v1_fetch_url
 from api.routers.v1 import infer as v1_infer
 from api.routers.v1 import jobs as v1_jobs
+from api.routers.v1 import store_bundle as v1_store_bundle
 from api.routers.v1 import validate as v1_validate
+from api.routers.v1 import verify_bundle as v1_verify_bundle
 
 log = structlog.get_logger(__name__)
 
@@ -30,10 +34,28 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     configure_logging(level=settings.log_level, fmt="json" if settings.env == "production" else "console")
     log.info("api_startup", env=settings.env, version="0.1.0")
 
+    if settings.env == "production" and settings.feature_admin_noauth:
+        raise RuntimeError(
+            "FEATURE_ADMIN_NOAUTH=true is not allowed in production. "
+            "Set FEATURE_ADMIN_NOAUTH=false and configure a proper auth provider."
+        )
+
     _setup_otel(app)
     mount_mcp(app)
 
-    yield
+    # AsyncPostgresSaver — mantém pool de conexões durante toda a vida da app
+    try:
+        from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver
+
+        async with AsyncPostgresSaver.from_conn_string(settings.langgraph_checkpoint_dsn) as saver:
+            await saver.setup()  # CREATE TABLE IF NOT EXISTS checkpoint_*
+            app.state.checkpointer = saver
+            log.info("langgraph_checkpointer_ready")
+            yield
+    except Exception as exc:
+        log.warning("langgraph_checkpointer_unavailable", error=str(exc))
+        app.state.checkpointer = None
+        yield
 
     log.info("api_shutdown")
 
@@ -86,6 +108,10 @@ def create_app() -> FastAPI:
     app.include_router(v1_validate.router, prefix="/v1")
     app.include_router(v1_jobs.router, prefix="/v1")
     app.include_router(v1_convert.router, prefix="/v1")
+    app.include_router(v1_fetch_url.router, prefix="/v1")
+    app.include_router(v1_store_bundle.router, prefix="/v1")
+    app.include_router(v1_verify_bundle.router, prefix="/v1")
+    app.include_router(v1_delete_resources.router, prefix="/v1")
 
     return app
 

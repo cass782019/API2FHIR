@@ -116,3 +116,76 @@ def test_fetch_uses_relative_url(html: str) -> None:
 def test_no_hardcoded_localhost_api(html: str) -> None:
     """Porta 8000 não deve aparecer no HTML (evita URL hardcoded)."""
     assert "localhost:8000" not in html
+
+
+# ── Encoding repair ───────────────────────────────────────────────────────────
+
+
+@pytest.mark.unit
+def test_html_has_repair_mojibake_function(html: str) -> None:
+    assert "_repairMojibake" in html
+
+
+@pytest.mark.unit
+def test_repair_mojibake_called_on_file_read(html: str) -> None:
+    """_repairMojibake must be applied after reading specText from the FileReader."""
+    idx_spectext = html.index("specText = _repairMojibake(")
+    idx_def = html.index("function _repairMojibake(")
+    assert idx_def < idx_spectext
+
+
+# ── Stepper ───────────────────────────────────────────────────────────────────
+
+
+@pytest.mark.unit
+def test_has_stepper_nav(html: str) -> None:
+    assert "stepper-nav" in html
+
+
+@pytest.mark.unit
+def test_has_four_step_panels(html: str) -> None:
+    for n in ("1", "2", "3", "4"):
+        assert f"step-panel-{n}" in html
+
+
+@pytest.mark.unit
+def test_has_step1_next_btn(html: str) -> None:
+    assert "step1-next-btn" in html
+
+
+@pytest.mark.unit
+def test_has_verify_all_btn(html: str) -> None:
+    assert "verify-all-btn" in html
+
+
+@pytest.mark.unit
+def test_has_verify_results_table(html: str) -> None:
+    assert "verify-results-body" in html
+
+
+# ── Aba URL ───────────────────────────────────────────────────────────────────
+
+
+@pytest.mark.unit
+def test_has_url_tab_panel(html: str) -> None:
+    assert "tab-url" in html
+
+
+@pytest.mark.unit
+def test_has_fetch_url_btn(html: str) -> None:
+    assert "fetch-url-btn" in html
+
+
+@pytest.mark.unit
+def test_fetch_url_endpoint_referenced(html: str) -> None:
+    assert "'/v1/fetch-url'" in html or '"/v1/fetch-url"' in html
+
+
+@pytest.mark.unit
+def test_store_bundle_endpoint_referenced(html: str) -> None:
+    assert "'/v1/store-bundle'" in html or '"/v1/store-bundle"' in html
+
+
+@pytest.mark.unit
+def test_verify_bundle_endpoint_referenced(html: str) -> None:
+    assert "'/v1/verify-bundle'" in html or '"/v1/verify-bundle"' in html

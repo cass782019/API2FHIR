@@ -85,6 +85,7 @@ async def _call_ollama(prompt: str, max_tokens: int) -> str:
         "model": OLLAMA_MODEL,
         "prompt": prompt,
         "stream": False,
+        "format": "json",  # Request JSON output when the model supports it
         "options": {"num_predict": min(max_tokens, 1024)},
     }
     async with httpx.AsyncClient(timeout=120.0) as c:
@@ -93,8 +94,45 @@ async def _call_ollama(prompt: str, max_tokens: int) -> str:
         return r.json().get("response", "")
 
 
+def _extract_json_text(text: str) -> str:
+    """Extract the first valid JSON object from an LLM response string.
+
+    Strategy:
+      1. Direct json.loads (model returned clean JSON)
+      2. json.JSONDecoder.raw_decode — finds the first '{' and parses forward
+      3. Greedy regex fallback for malformed but recoverable responses
+    """
+    # 1. Direct parse
+    try:
+        json.loads(text)
+        return text
+    except json.JSONDecodeError:
+        pass
+
+    # 2. Find first '{' and use raw_decode (handles leading whitespace/text)
+    start = text.find("{")
+    if start != -1:
+        try:
+            obj, _ = json.JSONDecoder().raw_decode(text, start)
+            return json.dumps(obj, ensure_ascii=False)
+        except json.JSONDecodeError:
+            pass
+
+    # 3. Greedy regex — last resort
+    m = re.search(r"\{.*\}", text, re.DOTALL)
+    if m:
+        return m.group(0)
+
+    return text  # return as-is; caller will surface the raw text
+
+
 # ─── mock FHIR ────────────────────────────────────────────────────────────────
-# Detecta qual resource gerar a partir das palavras-chave do prompt
+# Limitação conhecida (aceito para dev): _FHIR_MOCKS é um conjunto estático de
+# recursos FHIR pré-gerados. Os IDs são gerados uma única vez na inicialização
+# do módulo (não por requisição), então requisições repetidas ao mesmo tipo
+# retornam o mesmo id base. Isso é intencional para simplicidade — em produção
+# o backend real (Ollama ou Anthropic) gera recursos dinâmicos.
+# Para testes de integração use ANTHROPIC_BASE_URL apontando para o Anthropic real.
 
 _FHIR_MOCKS: dict[str, dict[str, Any]] = {
     "patient": {
@@ -193,10 +231,7 @@ async def messages(request: Request) -> JSONResponse:
         log.info("backend=ollama model=%s", OLLAMA_MODEL)
         try:
             text = await _call_ollama(prompt_text, max_tokens)
-            # Tenta extrair JSON do response do Ollama
-            match = re.search(r"\{.*\}", text, re.DOTALL)
-            if match:
-                text = match.group(0)
+            text = _extract_json_text(text)
             return JSONResponse(_build_response(text, model=f"ollama/{OLLAMA_MODEL}"))
         except Exception as exc:
             log.warning("ollama_failed fallback=mock error=%s", exc)

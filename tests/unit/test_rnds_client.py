@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import datetime as dt
+import ssl
 from unittest.mock import patch
 
 import pytest
@@ -181,6 +182,46 @@ def test_is_token_valid_returns_false_when_expired() -> None:
     client._token = "tok"
     client._token_expires_at = dt.datetime.now(tz=dt.UTC) - dt.timedelta(seconds=60)
     assert client._is_token_valid() is False
+
+
+@pytest.mark.unit
+def test_ssl_context_verify_disabled_when_verify_ssl_false() -> None:
+    """verify_ssl=False → CERT_NONE + check_hostname=False (homologação)."""
+    from connectors.rnds_client import RndsClient
+    from unittest.mock import patch
+
+    client = RndsClient(
+        base_url=_RNDS_FHIR,
+        auth_url=_RNDS_BASE,
+        cert_path=_CERT,
+        cert_password=_PASSWORD,
+        verify_ssl=False,
+    )
+    with patch.object(client._cert_path.__class__, "exists", return_value=True):
+        # load_cert_chain would fail without a real cert; mock it out
+        with patch("ssl.SSLContext.load_cert_chain"):
+            ctx = client._build_ssl_context()
+
+    assert ctx.verify_mode == ssl.CERT_NONE
+    assert ctx.check_hostname is False
+
+
+@pytest.mark.unit
+def test_ssl_context_verify_enabled_by_default() -> None:
+    """verify_ssl=True (default) → CERT_REQUIRED + check_hostname=True (produção)."""
+    from connectors.rnds_client import RndsClient
+
+    client = RndsClient(
+        base_url=_RNDS_FHIR,
+        auth_url=_RNDS_BASE,
+        cert_path=_CERT,
+        cert_password=_PASSWORD,
+    )
+    with patch("ssl.SSLContext.load_cert_chain"):
+        ctx = client._build_ssl_context()
+
+    assert ctx.verify_mode == ssl.CERT_REQUIRED
+    assert ctx.check_hostname is True
 
 
 @pytest.mark.unit

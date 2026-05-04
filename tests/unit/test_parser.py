@@ -190,7 +190,8 @@ def test_parse_oas2_body_param_becomes_request_body() -> None:
 
 @pytest.mark.unit
 def test_parse_invalid_json_raises() -> None:
-    from swagger_lens.parser import SpecParseError, parse_spec
+    from swagger_lens.exceptions import SpecParseError
+    from swagger_lens.parser import parse_spec
 
     with pytest.raises(SpecParseError, match="JSON"):
         parse_spec("{not valid json}", fmt="json")
@@ -198,7 +199,8 @@ def test_parse_invalid_json_raises() -> None:
 
 @pytest.mark.unit
 def test_parse_invalid_yaml_raises() -> None:
-    from swagger_lens.parser import SpecParseError, parse_spec
+    from swagger_lens.exceptions import SpecParseError
+    from swagger_lens.parser import parse_spec
 
     with pytest.raises(SpecParseError):
         parse_spec("key: [unclosed", fmt="yaml")
@@ -206,7 +208,8 @@ def test_parse_invalid_yaml_raises() -> None:
 
 @pytest.mark.unit
 def test_parse_missing_version_raises() -> None:
-    from swagger_lens.parser import SpecParseError, parse_spec
+    from swagger_lens.exceptions import SpecParseError
+    from swagger_lens.parser import parse_spec
 
     content = json.dumps({"info": {"title": "No version"}})
     with pytest.raises(SpecParseError, match="version"):

@@ -1,0 +1,4 @@
+Alembic migration environment for fhir-forge.
+
+Run `uv run alembic upgrade head` to apply all pending migrations.
+Run `uv run alembic revision --autogenerate -m "description"` to generate a new migration.

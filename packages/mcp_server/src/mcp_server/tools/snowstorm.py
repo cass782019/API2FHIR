@@ -8,10 +8,10 @@ from __future__ import annotations
 from typing import Any
 
 import httpx
+from core.settings import settings as core_settings
 
-from ..settings import settings
+from ..settings import settings as mcp_settings
 
-_SNOWSTORM_FHIR = f"{settings.snowstorm_base_url}/fhir"
 _SNOMED_SYSTEM = "http://snomed.info/sct"
 
 
@@ -31,9 +31,9 @@ async def find_concept(
         Returns empty list if Snowstorm is unavailable or SNOMED not loaded.
     """
     try:
-        async with httpx.AsyncClient(timeout=settings.snowstorm_timeout) as client:
+        async with httpx.AsyncClient(timeout=mcp_settings.snowstorm_timeout) as client:
             response = await client.get(
-                f"{settings.snowstorm_base_url}/browser/MAIN/concepts",
+                f"{core_settings.snowstorm_base_url}/browser/MAIN/concepts",
                 params={"term": term, "ecl": ecl_filter or "", "limit": 20},
             )
         if response.status_code == 404:
@@ -72,16 +72,14 @@ async def translate_code(
     Returns:
         Coding dict with system, code, display — or None if no mapping found.
     """
-    from ..settings import settings as root_settings
-
-    url = f"{root_settings.hapi_base_url}/ConceptMap/$translate"
+    url = f"{core_settings.hapi_base_url}/ConceptMap/$translate"
     params = {
         "system": source_system,
         "code": source_code,
         "targetsystem": target_system,
     }
 
-    async with httpx.AsyncClient(timeout=settings.hapi_timeout) as client:
+    async with httpx.AsyncClient(timeout=mcp_settings.hapi_timeout) as client:
         response = await client.get(url, params=params)
 
     if response.status_code == 404:

@@ -5,7 +5,7 @@ from typing import Any, Literal, TypedDict
 
 import yaml
 
-SpecType = Literal["openapi", "swagger", "payload"]
+SpecType = Literal["openapi", "swagger", "payload", "curl"]
 
 
 class DetectionResult(TypedDict):
@@ -20,6 +20,8 @@ def detect_spec_type(content: str | bytes | dict[str, Any]) -> DetectionResult:
     else:
         text = content.decode("utf-8") if isinstance(content, bytes) else content
         text = text.strip()
+        if text.startswith("curl "):
+            return {"type": "curl", "version": None}
         try:
             data = json.loads(text)
         except json.JSONDecodeError:

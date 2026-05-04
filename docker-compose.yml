@@ -248,7 +248,108 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:9099/health || exit 1"]
+      test: ["CMD", "python", "-c",
+             "import urllib.request; urllib.request.urlopen('http://localhost:9099/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    networks:
+      - forge-net
+
+  # ─────────────────────────────────────────────────────────────
+  # FastAPI — gateway principal do fhir-forge.
+  # Acesso: http://localhost:8000
+  # ─────────────────────────────────────────────────────────────
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    container_name: forge-api
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_USER: ${POSTGRES_USER:-forge}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-forge_dev}
+      POSTGRES_PORT: 5432
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      HAPI_BASE_URL: http://hapi:8080/fhir
+      SNOWSTORM_HOST: snowstorm
+      SNOWSTORM_PORT: 8080
+      LANGFUSE_HOST: http://langfuse:3000
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      ANTHROPIC_MODEL_PRIMARY: ${ANTHROPIC_MODEL_PRIMARY:-claude-opus-4-7}
+      ANTHROPIC_MODEL_FAST: ${ANTHROPIC_MODEL_FAST:-claude-haiku-4-5-20251001}
+      FEATURE_ADMIN_NOAUTH: ${FEATURE_ADMIN_NOAUTH:-true}
+      FEATURE_ALLOW_PHI_EGRESS: ${FEATURE_ALLOW_PHI_EGRESS:-false}
+      FEATURE_MCP_ENABLED: ${FEATURE_MCP_ENABLED:-true}
+      ENV: ${ENV:-development}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+    ports:
+      - "${API_PORT:-8000}:8000"
+    healthcheck:
+      test: ["CMD", "python", "-c",
+             "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 30s
+    networks:
+      - forge-net
+
+  # ─────────────────────────────────────────────────────────────
+  # Web UI — nginx serving frontend; proxy para API no container.
+  # Acesso: http://localhost:3001
+  # ─────────────────────────────────────────────────────────────
+  # ─────────────────────────────────────────────────────────────
+  # Mock APIs — simula 5 endpoints hospitalares Philips HSP para demos,
+  # testes de integração e onboarding. Serve fixtures de jsonAPI/.
+  # Acesso: http://localhost:8085
+  # ─────────────────────────────────────────────────────────────
+  mock-apis:
+    image: python:3.12-slim
+    container_name: forge-mock-apis
+    restart: unless-stopped
+    working_dir: /app
+    command: >
+      sh -c "pip install -q fastapi 'uvicorn[standard]' &&
+             uvicorn main:app --host 0.0.0.0 --port 8085"
+    environment:
+      MOCK_DATA_DIR: /data/jsonapi
+    volumes:
+      - ./apps/mock_apis/src:/app
+      - ./jsonAPI:/data/jsonapi:ro
+    ports:
+      - "${MOCK_APIS_PORT:-8085}:8085"
+    networks:
+      - forge-net
+    healthcheck:
+      test: ["CMD", "python", "-c",
+             "import urllib.request; urllib.request.urlopen('http://localhost:8085/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 40s
+
+  web:
+    image: nginx:1.27-alpine
+    container_name: forge-web
+    restart: unless-stopped
+    depends_on:
+      api:
+        condition: service_healthy
+    volumes:
+      - ./apps/web/static:/usr/share/nginx/html:ro
+      - ./apps/web/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    ports:
+      - "${WEB_PORT:-3001}:80"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost/ || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 3

@@ -29,16 +29,16 @@
       background: #fff;
       border-radius: var(--radius);
       box-shadow: var(--shadow);
-      max-width: 680px;
+      max-width: 720px;
       margin: 0 auto;
       padding: 2rem;
     }
 
-    header { margin-bottom: 1.5rem; }
+    header { margin-bottom: 1.25rem; }
     header h1 { font-size: 1.4rem; color: var(--blue); }
     header p  { color: var(--gray); margin-top: .25rem; font-size: .9rem; }
 
-    /* ── Drop zone ──────────────────────────────────────────── */
+    /* ── Drop zone ─────────────────────────────────────────── */
     .drop-zone {
       border: 2px dashed #dadce0;
       border-radius: var(--radius);
@@ -51,10 +51,9 @@
     .drop-zone:hover         { border-color: var(--blue); }
     .drop-zone.drag-over     { border-color: var(--blue); background: #e8f0fe; }
     .drop-zone.has-file      { border-color: var(--green); }
-
-    .drop-icon { font-size: 2.5rem; line-height: 1; margin-bottom: .75rem; }
-    .drop-label { font-size: 1rem; color: #202124; margin-bottom: .4rem; }
-    .drop-sub   { font-size: .85rem; color: var(--gray); }
+    .drop-icon   { font-size: 2.5rem; line-height: 1; margin-bottom: .75rem; }
+    .drop-label  { font-size: 1rem; color: #202124; margin-bottom: .4rem; }
+    .drop-sub    { font-size: .85rem; color: var(--gray); }
     .drop-sub button {
       background: none; border: none; color: var(--blue);
       cursor: pointer; font-size: inherit; text-decoration: underline; padding: 0;
@@ -64,24 +63,11 @@
       color: var(--green); font-weight: 600;
     }
 
-    /* ── Options ────────────────────────────────────────────── */
-    details {
-      margin-top: 1.25rem;
-      border: 1px solid #dadce0;
-      border-radius: var(--radius);
-      padding: .75rem 1rem;
-    }
-    summary {
-      cursor: pointer; font-weight: 600; color: var(--gray);
-      font-size: .9rem; list-style: none; user-select: none;
-    }
-    summary::before { content: "▸ "; }
-    details[open] summary::before { content: "▾ "; }
+    /* ── Options grid ──────────────────────────────────────── */
     .opts-grid {
       display: grid;
       grid-template-columns: max-content 1fr;
       gap: .6rem 1rem;
-      margin-top: .75rem;
       align-items: center;
     }
     .opts-grid label { font-size: .875rem; color: var(--gray); }
@@ -94,24 +80,9 @@
       width: 100%;
     }
     .opts-grid select:focus,
-    .opts-grid input:focus {
-      outline: 2px solid var(--blue);
-      border-color: transparent;
-    }
+    .opts-grid input:focus { outline: 2px solid var(--blue); border-color: transparent; }
 
-    /* ── Convert button ─────────────────────────────────────── */
-    #convert-btn {
-      display: block; width: 100%; margin-top: 1.25rem;
-      padding: .75rem;
-      background: var(--blue); color: #fff;
-      border: none; border-radius: var(--radius);
-      font-size: 1rem; font-weight: 600;
-      cursor: pointer; transition: background .15s;
-    }
-    #convert-btn:hover:not(:disabled) { background: #1557b0; }
-    #convert-btn:disabled { background: #bdbdbd; cursor: not-allowed; }
-
-    /* ── Spinner ────────────────────────────────────────────── */
+    /* ── Spinner ───────────────────────────────────────────── */
     .spinner {
       width: 32px; height: 32px;
       border: 3px solid #e0e0e0;
@@ -122,7 +93,7 @@
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* ── Error ──────────────────────────────────────────────── */
+    /* ── Error ─────────────────────────────────────────────── */
     .error-box {
       background: #fce8e6; color: var(--red);
       border-radius: var(--radius); padding: 1rem;
@@ -130,66 +101,211 @@
     }
     .error-box strong { display: block; margin-bottom: .25rem; }
 
-    /* ── Result ─────────────────────────────────────────────── */
+    /* ── Result card ───────────────────────────────────────── */
     .result-card {
       background: #e8f5e9;
       border-radius: var(--radius);
       padding: 1.25rem 1.5rem;
-      margin-top: 1rem;
+      margin-bottom: 1rem;
     }
     .result-card h3 { color: var(--green); margin-bottom: .75rem; font-size: 1rem; }
-    dl {
-      display: grid;
-      grid-template-columns: max-content 1fr;
-      gap: .35rem .75rem;
-    }
+    dl { display: grid; grid-template-columns: max-content 1fr; gap: .35rem .75rem; }
     dt { font-weight: 600; color: var(--gray); font-size: .875rem; }
     dd { font-size: .875rem; word-break: break-all; }
 
-    #download-btn {
-      margin-top: 1rem; padding: .6rem 1.25rem;
-      background: var(--green); color: #fff;
-      border: none; border-radius: var(--radius);
-      font-size: .9rem; font-weight: 600;
-      cursor: pointer; transition: background .15s;
-    }
-    #download-btn:hover { background: #1b5e20; }
-
-    /* ── Utility ────────────────────────────────────────────── */
-    .hidden { display: none !important; }
-
-    /* ── Spec edit section ──────────────────────────────────── */
-    .spec-edit-card {
-      background: #fff8e1 !important;
-      border: 1px solid #f5d142;
-    }
-    .spec-edit-card h3 { color: var(--gray); }
-    #monaco-container {
-      height: 400px;
-      border: 1px solid #dadce0;
-      border-radius: var(--radius);
-      margin-top: .75rem;
-      overflow: hidden;
-    }
-    .spec-edit-actions {
-      display: flex;
-      gap: .5rem;
-      margin-top: 1rem;
-    }
-    .btn-secondary {
-      background: var(--gray); color: #fff; border: none;
-      padding: .6rem 1.25rem; border-radius: var(--radius);
-      cursor: pointer; font-size: .9rem;
-    }
+    /* ── Buttons ───────────────────────────────────────────── */
     .btn-primary {
+      background: var(--blue); color: #fff; border: none;
+      padding: .6rem 1.25rem; border-radius: var(--radius);
+      cursor: pointer; font-weight: 600; font-size: .9rem;
+      transition: background .15s;
+    }
+    .btn-primary:hover:not(:disabled) { background: #1557b0; }
+    .btn-primary:disabled { background: #bdbdbd; cursor: not-allowed; }
+
+    .btn-success {
       background: var(--green); color: #fff; border: none;
       padding: .6rem 1.25rem; border-radius: var(--radius);
-      cursor: pointer; font-weight: 600; flex: 1;
+      cursor: pointer; font-weight: 600; font-size: .9rem;
+      transition: background .15s;
     }
+    .btn-success:hover:not(:disabled) { background: #1b5e20; }
+    .btn-success:disabled { background: #bdbdbd; cursor: not-allowed; }
+
+    .btn-secondary {
+      background: #fff; color: var(--blue); border: 1.5px solid var(--blue);
+      padding: .6rem 1.25rem; border-radius: var(--radius);
+      cursor: pointer; font-weight: 600; font-size: .9rem;
+      transition: background .15s;
+    }
+    .btn-secondary:hover:not(:disabled) { background: #e8f0fe; }
+    .btn-secondary:disabled { opacity: .4; cursor: not-allowed; }
+
+    /* ── Utility ───────────────────────────────────────────── */
+    .hidden { display: none !important; }
+
+    /* ── Main nav (top-level) ──────────────────────────────── */
+    .main-nav {
+      display: flex; gap: .25rem;
+      max-width: 720px; margin: 0 auto 1.25rem;
+    }
+    .main-nav-btn {
+      padding: .55rem 1.25rem; border: 1.5px solid #dadce0;
+      border-radius: var(--radius); background: #f1f3f4;
+      cursor: pointer; font-weight: 600; color: var(--gray);
+      font-size: .9rem; transition: background .15s, color .15s, border-color .15s;
+    }
+    .main-nav-btn.active { background: var(--blue); color: #fff; border-color: var(--blue); }
+    .main-panel          { display: none; }
+    .main-panel.active   { display: block; }
+
+    /* ── Tabelas Gerenciar / Testes ────────────────────────── */
+    .mgmt-table, .test-table {
+      width: 100%; border-collapse: collapse; margin-top: .75rem; font-size: .875rem;
+    }
+    .mgmt-table th, .test-table th {
+      background: #f1f3f4; padding: .5rem .4rem;
+      font-size: .8rem; font-weight: 600; color: var(--gray); text-align: left;
+    }
+    .mgmt-table td, .test-table td { padding: .4rem; border-bottom: 1px solid #f1f3f4; }
+    .test-table th, .test-table td { text-align: center; }
+    .test-table th:first-child, .test-table td:first-child { text-align: left; }
+    .mgmt-table th:first-child, .mgmt-table td:first-child { width: 2.5rem; text-align: center; }
+
+    /* ── Badge ─────────────────────────────────────────────── */
+    .badge { display: inline-block; padding: .15rem .45rem; border-radius: 4px;
+             font-size: .8rem; font-weight: 600; }
+    .badge-ok   { background: #e8f5e9; color: var(--green); }
+    .badge-err  { background: #fce8e6; color: var(--red); }
+    .badge-gray { background: #f1f3f4; color: var(--gray); }
+    .badge-warn { background: #fff8e1; color: #f57f17; }
+
+    /* ── Summary banner ─────────────────────────────────────── */
+    .summary-banner {
+      padding: .75rem 1rem; border-radius: var(--radius);
+      font-weight: 600; font-size: .95rem; margin-bottom: 1rem;
+    }
+    .summary-ok  { background: #e8f5e9; color: var(--green); }
+    .summary-err { background: #fce8e6; color: var(--red); }
+
+    /* ── Botão destrutivo ───────────────────────────────────── */
+    .btn-danger {
+      background: #fce8e6; color: var(--red); border: 1.5px solid var(--red);
+      padding: .6rem 1.25rem; border-radius: var(--radius);
+      cursor: pointer; font-weight: 600; font-size: .9rem;
+      transition: background .15s;
+    }
+    .btn-danger:hover:not(:disabled) { background: #ffcdd2; }
+    .btn-danger:disabled { opacity: .4; cursor: not-allowed; }
+
+    /* ── Monaco ────────────────────────────────────────────── */
+    #monaco-container {
+      height: 420px;
+      border: 1px solid #dadce0;
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    /* ── Stepper nav ───────────────────────────────────────── */
+    .stepper-nav {
+      display: flex;
+      gap: .25rem;
+      margin-bottom: 1.5rem;
+      border-bottom: 2px solid #e8eaed;
+    }
+    .step-btn {
+      padding: .5rem 1rem;
+      border: none;
+      border-radius: 8px 8px 0 0;
+      background: #e8eaed;
+      cursor: pointer;
+      font-weight: 600;
+      color: var(--gray);
+      font-size: .85rem;
+      transition: background .15s;
+      position: relative;
+      bottom: -2px;
+      border-bottom: 2px solid transparent;
+    }
+    .step-btn.active  { background: #fff; color: var(--blue); border-bottom: 2px solid var(--blue); }
+    .step-btn:disabled { opacity: .4; cursor: default; }
+
+    /* ── Step panels ───────────────────────────────────────── */
+    .step-panel         { display: none; }
+    .step-panel.active  { display: block; }
+
+    /* ── Step 1: tab bar ───────────────────────────────────── */
+    .tab-bar { display: flex; gap: .5rem; margin-bottom: .75rem; }
+    .tab-btn {
+      padding: .4rem 1rem; border: none; border-radius: 6px;
+      background: #f1f3f4; cursor: pointer; font-weight: 500;
+      color: var(--gray); font-size: .875rem; transition: background .15s;
+    }
+    .tab-btn.active { background: var(--blue); color: #fff; }
+    .tab-panel        { display: block; }
+    .tab-panel.hidden { display: none; }
+
+    .url-input-row {
+      display: flex; gap: .5rem; align-items: center;
+      flex-wrap: wrap; padding: 1rem;
+      background: #f8f9fa; border-radius: var(--radius);
+      margin-bottom: .75rem;
+    }
+    #api-url-input {
+      flex: 1; min-width: 200px; padding: .55rem .7rem;
+      border: 1px solid #dadce0; border-radius: 6px; font-size: .9rem;
+    }
+    #url-method-select {
+      padding: .55rem .5rem; border: 1px solid #dadce0;
+      border-radius: 6px; font-size: .9rem;
+    }
+
+    .hapi-config-row {
+      display: flex; align-items: center; gap: .75rem;
+      margin: .75rem 0 1rem; flex-wrap: wrap;
+    }
+    .hapi-config-row label {
+      font-weight: 600; color: var(--gray);
+      white-space: nowrap; font-size: .875rem;
+    }
+    #hapi-url {
+      flex: 1; min-width: 200px; padding: .5rem .7rem;
+      border: 1px solid #dadce0; border-radius: 6px; font-size: .9rem;
+    }
+
+    /* ── Step 3: publish list ──────────────────────────────── */
+    #publish-results-list li {
+      padding: .3rem 0; font-size: .875rem;
+      border-bottom: 1px solid #f1f3f4;
+    }
+
+    /* ── Step 4: verify table ──────────────────────────────── */
+    #verify-results-table th {
+      background: #f1f3f4; padding: .5rem .4rem;
+      font-size: .8rem; font-weight: 600; color: var(--gray);
+      text-align: center;
+    }
+    #verify-results-table th:first-child { text-align: left; }
+    #verify-results-table td {
+      padding: .4rem; font-size: .875rem;
+      border-bottom: 1px solid #f1f3f4; text-align: center;
+    }
+    #verify-results-table td:first-child { text-align: left; }
+
+    /* ── Action rows ───────────────────────────────────────── */
+    .action-row { display: flex; gap: .5rem; margin-top: 1rem; flex-wrap: wrap; }
+    .action-row > * { flex: 1; }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.52.0/min/vs/loader.js"></script>
 </head>
 <body>
+  <nav class="main-nav" aria-label="Navegação principal">
+    <button class="main-nav-btn active" data-main-tab="pipeline">🔄 Pipeline</button>
+    <button class="main-nav-btn" data-main-tab="gerenciar">🗑 Gerenciar</button>
+    <button class="main-nav-btn" data-main-tab="testes">🧪 Testes</button>
+  </nav>
+
+  <div id="main-panel-pipeline" class="main-panel active">
   <main class="card">
 
     <header>
@@ -197,79 +313,301 @@
       <p>Converta especificações OpenAPI/Swagger em recursos FHIR R4 (BR Core / RNDS)</p>
     </header>
 
-    <!-- 1. Drop zone -->
-    <div id="upload-zone" class="drop-zone" role="button" tabindex="0" aria-label="Área para upload de arquivo">
-      <input type="file" id="file-input" accept=".json,.yaml,.yml" hidden>
-      <div class="drop-icon">📄</div>
-      <p class="drop-label">Arraste seu arquivo aqui</p>
-      <p class="drop-sub">ou <button id="browse-btn" type="button">clique para selecionar</button></p>
-      <p id="file-name" class="hidden"></p>
+    <!-- Stepper nav -->
+    <nav id="stepper-nav" class="stepper-nav" aria-label="Passos do pipeline">
+      <button class="step-btn active" data-step="1">① Configurar</button>
+      <button class="step-btn" data-step="2" disabled>② Converter</button>
+      <button class="step-btn" data-step="3" disabled>③ Publicar</button>
+      <button class="step-btn" data-step="4" disabled>④ Verificar</button>
+    </nav>
+
+    <!-- ── Passo 1: Configurar ─────────────────────────────── -->
+    <div id="step-panel-1" class="step-panel active">
+
+      <div class="tab-bar" role="tablist">
+        <button class="tab-btn active" data-tab="upload" role="tab">📁 Arquivo</button>
+        <button class="tab-btn" data-tab="url" role="tab">🔗 URL / API</button>
+      </div>
+
+      <!-- Aba: upload de arquivo -->
+      <div id="tab-upload" class="tab-panel">
+        <div id="upload-zone" class="drop-zone" role="button" tabindex="0" aria-label="Área para upload de arquivo">
+          <input type="file" id="file-input" accept=".json,.yaml,.yml" hidden>
+          <div class="drop-icon">📄</div>
+          <p class="drop-label">Arraste seu arquivo aqui</p>
+          <p class="drop-sub">ou <button id="browse-btn" type="button">clique para selecionar</button></p>
+          <p id="file-name" class="hidden"></p>
+        </div>
+      </div>
+
+      <!-- Aba: URL / API -->
+      <div id="tab-url" class="tab-panel hidden">
+        <div class="url-input-row">
+          <input type="url" id="api-url-input" placeholder="https://api.exemplo.com/swagger.json">
+          <select id="url-method-select">
+            <option value="GET">GET</option>
+            <option value="POST">POST</option>
+          </select>
+          <button id="fetch-url-btn" type="button" class="btn-primary">🔍 Buscar</button>
+        </div>
+        <p id="url-detected-type" class="drop-sub hidden"></p>
+      </div>
+
+      <!-- Configuração HAPI -->
+      <div class="hapi-config-row">
+        <label for="hapi-url">HAPI FHIR URL</label>
+        <input type="url" id="hapi-url" value="http://localhost:8090/fhir" placeholder="http://localhost:8090/fhir">
+      </div>
+
+      <button id="step1-next-btn" type="button" class="btn-primary" disabled style="display:block;width:100%;">
+        Avançar para Converter ▶
+      </button>
     </div>
 
-    <!-- 2. Options -->
-    <details id="opts">
-      <summary>Opções de conversão</summary>
-      <div class="opts-grid">
+    <!-- ── Passo 2: Converter ───────────────────────────────── -->
+    <div id="step-panel-2" class="step-panel">
+
+      <div class="opts-grid" style="margin-bottom:1rem;">
         <label for="model-select">Modelo</label>
         <select id="model-select">
           <option value="claude-opus-4-7">claude-opus-4-7 (padrão)</option>
           <option value="claude-haiku-4-5-20251001">claude-haiku-4-5-20251001 (rápido)</option>
           <option value="sabia-4">sabia-4 (PT-BR)</option>
         </select>
-        <label for="hapi-url">HAPI Base URL</label>
-        <input type="text" id="hapi-url" value="http://localhost:8090/fhir" placeholder="http://localhost:8090/fhir">
       </div>
-    </details>
 
-    <!-- 3. Actions -->
-    <button id="convert-btn" type="button" disabled>Converter para FHIR</button>
-    <div id="spinner" class="spinner hidden" role="status" aria-label="Convertendo..."></div>
-    <div id="error-box" class="error-box hidden" role="alert"></div>
+      <p id="fabricated-warning" class="drop-sub" style="margin-bottom:.5rem;color:#e65100;"></p>
 
-    <!-- 3.5 Spec inferida (só aparece quando upload é payload) -->
-    <section id="spec-edit-section" class="hidden">
-      <div class="result-card spec-edit-card">
-        <h3>📝 Spec inferida (revisar antes de converter)</h3>
-        <p class="drop-sub" id="fabricated-warning"></p>
-        <div id="monaco-container"></div>
-        <div class="spec-edit-actions">
-          <button id="cancel-edit-btn" type="button" class="btn-secondary">Cancelar</button>
-          <button id="confirm-convert-btn" type="button" class="btn-primary">✓ Confirmar e converter</button>
-        </div>
+      <div id="monaco-container"></div>
+
+      <div class="action-row">
+        <button id="convert-btn" type="button" class="btn-primary">✓ Confirmar e Converter</button>
       </div>
-    </section>
+    </div>
 
-    <!-- 4. Result -->
-    <section id="result-section" class="hidden">
-      <div class="result-card">
+    <!-- ── Passo 3: Publicar ────────────────────────────────── -->
+    <div id="step-panel-3" class="step-panel">
+
+      <div id="result-section" class="result-card">
         <h3>✅ Conversão concluída</h3>
         <dl id="stats"></dl>
-        <button id="download-btn" type="button">⬇ Download bundle.json</button>
       </div>
-    </section>
+
+      <p id="bundle-summary" class="drop-sub" style="margin-bottom:1rem;"></p>
+
+      <button id="publish-hapi-btn" type="button" class="btn-primary" style="display:block;width:100%;margin-bottom:.75rem;">
+        📤 Publicar no HAPI
+      </button>
+
+      <button id="bundle-validate-btn" type="button" class="btn-secondary" style="display:block;width:100%;margin-bottom:.75rem;">
+        🔍 Validar Bundle ($validate)
+      </button>
+      <div id="bundle-validate-result" class="hidden" style="margin-bottom:.75rem;padding:.75rem;border-radius:6px;font-size:.875rem;line-height:1.5;border:1px solid #dadce0;background:#f8f9fa;"></div>
+
+      <ul id="publish-results-list" style="list-style:none;padding:0;"></ul>
+
+      <div class="action-row">
+        <button id="download-btn" type="button" class="btn-success">⬇ Download bundle.json</button>
+        <button id="step3-next-btn" type="button" class="btn-secondary" disabled>
+          Avançar para Verificar ▶
+        </button>
+      </div>
+    </div>
+
+    <!-- ── Passo 4: Verificar ───────────────────────────────── -->
+    <div id="step-panel-4" class="step-panel">
+
+      <button id="verify-all-btn" type="button" class="btn-primary" style="display:block;width:100%;margin-bottom:1rem;">
+        🔄 Verificar todos os recursos no HAPI
+      </button>
+
+      <table id="verify-results-table" style="width:100%;border-collapse:collapse;">
+        <thead>
+          <tr>
+            <th>Recurso</th>
+            <th>GET</th>
+            <th>Válido</th>
+            <th>Issues</th>
+            <th>Link</th>
+          </tr>
+        </thead>
+        <tbody id="verify-results-body"></tbody>
+      </table>
+    </div>
+
+    <!-- ── Global ───────────────────────────────────────────── -->
+    <div id="spinner" class="spinner hidden" role="status" aria-label="Processando..."></div>
+    <div id="error-box" class="error-box hidden" role="alert"></div>
 
   </main>
+  </div><!-- /main-panel-pipeline -->
+
+  <!-- ── Painel Gerenciar ─────────────────────────────────── -->
+  <div id="main-panel-gerenciar" class="main-panel">
+    <main class="card">
+      <header>
+        <h1>🗑 Gerenciar Recursos FHIR</h1>
+        <p>Visualize e delete recursos publicados no HAPI.</p>
+      </header>
+
+      <div class="hapi-config-row">
+        <label for="manage-hapi-url">HAPI FHIR URL</label>
+        <input type="url" id="manage-hapi-url" value="http://localhost:8090/fhir"
+               placeholder="http://localhost:8090/fhir" style="flex:1;min-width:200px;padding:.5rem .7rem;border:1px solid #dadce0;border-radius:6px;font-size:.9rem;">
+      </div>
+
+      <div style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;margin-bottom:.75rem;">
+        <button id="manage-load-session" class="btn-secondary">📋 Carregar da sessão</button>
+        <select id="manage-type-filter" style="padding:.5rem .6rem;border:1px solid #dadce0;border-radius:6px;font-size:.875rem;">
+          <option value="">— Tipo para buscar —</option>
+          <option>Patient</option><option>Practitioner</option><option>Organization</option>
+          <option>Encounter</option><option>Observation</option><option>Condition</option>
+          <option>MedicationRequest</option><option>DiagnosticReport</option>
+          <option>Bundle</option><option>Schedule</option><option>Slot</option>
+          <option>Appointment</option>
+        </select>
+        <button id="manage-search-btn" class="btn-primary">🔍 Buscar no HAPI</button>
+      </div>
+
+      <table class="mgmt-table hidden" id="manage-table">
+        <thead>
+          <tr>
+            <th><input type="checkbox" id="manage-select-all" title="Selecionar todos"></th>
+            <th>Tipo</th><th>ID</th><th>URL</th><th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="manage-table-body"></tbody>
+      </table>
+      <p id="manage-empty-msg" style="color:var(--gray);margin-top:.75rem;font-size:.9rem;">
+        Nenhum recurso carregado. Use "Carregar da sessão" ou "Buscar no HAPI".
+      </p>
+
+      <div style="display:flex;gap:.5rem;margin-top:1rem;flex-wrap:wrap;">
+        <button id="manage-delete-selected" class="btn-primary" disabled>🗑 Deletar Selecionados</button>
+        <button id="manage-delete-all" class="btn-danger" disabled>⚠ Deletar Tudo</button>
+      </div>
+
+      <div id="manage-spinner" class="spinner hidden"></div>
+      <div id="manage-error-box" class="error-box hidden"></div>
+      <div id="manage-result-box" class="hidden"
+           style="margin-top:.75rem;padding:.75rem 1rem;border-radius:var(--radius);background:#e8f5e9;color:var(--green);font-weight:600;"></div>
+    </main>
+  </div><!-- /main-panel-gerenciar -->
+
+  <!-- ── Painel Testes ────────────────────────────────────── -->
+  <div id="main-panel-testes" class="main-panel">
+    <main class="card">
+      <header>
+        <h1>🧪 Testes de Recursos FHIR</h1>
+        <p>Execute GET + $validate em recursos publicados no HAPI.</p>
+      </header>
+
+      <div class="hapi-config-row">
+        <label for="test-hapi-url">HAPI FHIR URL</label>
+        <input type="url" id="test-hapi-url" value="http://localhost:8090/fhir"
+               placeholder="http://localhost:8090/fhir" style="flex:1;min-width:200px;padding:.5rem .7rem;border:1px solid #dadce0;border-radius:6px;font-size:.9rem;">
+      </div>
+
+      <div class="hapi-config-row" style="margin-top:.5rem;">
+        <label for="test-profile-url">Perfil BR Core (opcional)</label>
+        <input type="url" id="test-profile-url"
+               placeholder="https://rnds-fhir.saude.gov.br/StructureDefinition/..."
+               style="flex:1;min-width:200px;padding:.5rem .7rem;border:1px solid #dadce0;border-radius:6px;font-size:.9rem;">
+      </div>
+
+      <div style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;margin-bottom:.75rem;">
+        <button id="test-load-session" class="btn-secondary">📋 Carregar da sessão</button>
+        <select id="test-type-input" style="padding:.5rem .6rem;border:1px solid #dadce0;border-radius:6px;font-size:.875rem;">
+          <option value="">— Tipo —</option>
+          <option>Patient</option><option>Practitioner</option><option>Organization</option>
+          <option>Encounter</option><option>Observation</option><option>Condition</option>
+          <option>MedicationRequest</option><option>DiagnosticReport</option>
+          <option>Bundle</option><option>Schedule</option><option>Slot</option>
+          <option>Appointment</option>
+        </select>
+        <input id="test-id-input" placeholder="resource_id"
+               style="flex:1;padding:.5rem .7rem;border:1px solid #dadce0;border-radius:6px;font-size:.875rem;">
+        <button id="test-add-btn" class="btn-secondary">➕ Adicionar</button>
+      </div>
+
+      <div id="test-summary" class="summary-banner hidden"></div>
+
+      <table class="test-table hidden" id="test-table">
+        <thead>
+          <tr>
+            <th style="text-align:left">Recurso</th>
+            <th>GET</th><th>$validate</th><th>Issues</th><th>Ação</th>
+          </tr>
+        </thead>
+        <tbody id="test-table-body"></tbody>
+      </table>
+      <p id="test-empty-msg" style="color:var(--gray);margin-top:.75rem;font-size:.9rem;">
+        Nenhum recurso adicionado. Use "Carregar da sessão" ou adicione manualmente.
+      </p>
+
+      <div style="margin-top:1rem;">
+        <button id="test-run-all" class="btn-primary" disabled>▶ Executar Todos</button>
+      </div>
+
+      <div id="test-spinner" class="spinner hidden"></div>
+      <div id="test-error-box" class="error-box hidden"></div>
+    </main>
+  </div><!-- /main-panel-testes -->
 
   <script>
     'use strict';
 
-    // ── Estado ───────────────────────────────────────────────
-    let specText   = null;
-    let lastBundle = null;
+    // ── Estado ────────────────────────────────────────────────
+    let specText            = null;
+    let currentFileName     = null;
+    let lastBundle          = null;
+    let lastStoredResources = [];
+    let _specWasPayload     = false;
+    let editor              = null;
 
-    // ── Elementos ────────────────────────────────────────────
+    // ── Elementos globais ─────────────────────────────────────
     const uploadZone  = document.getElementById('upload-zone');
     const fileInput   = document.getElementById('file-input');
     const browseBtn   = document.getElementById('browse-btn');
     const fileName    = document.getElementById('file-name');
-    const convertBtn  = document.getElementById('convert-btn');
     const spinner     = document.getElementById('spinner');
     const errorBox    = document.getElementById('error-box');
-    const resultSect  = document.getElementById('result-section');
-    const statsEl     = document.getElementById('stats');
-    const downloadBtn = document.getElementById('download-btn');
     const modelSelect = document.getElementById('model-select');
-    const hapiUrl     = document.getElementById('hapi-url');
+
+    // ── Monaco config ─────────────────────────────────────────
+    if (typeof require !== 'undefined') {
+      require.config({ paths: { vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.52.0/min/vs' }});
+    }
+
+    // ── Stepper navigation ────────────────────────────────────
+    function goToStep(n) {
+      document.querySelectorAll('.step-panel').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.step-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById('step-panel-' + n).classList.add('active');
+      document.querySelector('.step-btn[data-step="' + n + '"]').classList.add('active');
+      if (n === 2 && editor) setTimeout(() => editor.layout(), 80);
+    }
+
+    function enableStep(n) {
+      document.querySelector('.step-btn[data-step="' + n + '"]').disabled = false;
+    }
+
+    // ── Tab switching (Passo 1) ───────────────────────────────
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.add('hidden'));
+        btn.classList.add('active');
+        document.getElementById('tab-' + btn.dataset.tab).classList.remove('hidden');
+        specText = null;
+        currentFileName = null;
+        document.getElementById('step1-next-btn').disabled = true;
+        document.getElementById('url-detected-type').classList.add('hidden');
+        uploadZone.classList.remove('has-file');
+        fileName.classList.add('hidden');
+        clearError();
+      });
+    });
 
     // ── Upload: drag-and-drop ─────────────────────────────────
     uploadZone.addEventListener('dragover', e => {
@@ -299,173 +637,303 @@
       if (fileInput.files[0]) handleFile(fileInput.files[0]);
     });
 
+    function _repairMojibake(text) {
+      // Telltale of UTF-8 bytes read as Latin-1: Ã followed by Latin-1 supplement char.
+      if (!text.includes('Ã')) return text;
+      try {
+        const bytes = new Uint8Array(text.length);
+        for (let i = 0; i < text.length; i++) bytes[i] = text.charCodeAt(i) & 0xff;
+        // fatal:true throws on invalid sequences — a real UTF-8 file returns via catch unchanged.
+        return new TextDecoder('utf-8', { fatal: true }).decode(bytes);
+      } catch {
+        return text;
+      }
+    }
+
     function handleFile(file) {
       const reader = new FileReader();
       reader.onload = e => {
-        specText = e.target.result;
-        convertBtn.disabled = false;
+        specText = _repairMojibake(e.target.result);
+        currentFileName = file.name;
         uploadZone.classList.remove('drag-over');
         uploadZone.classList.add('has-file');
         fileName.textContent = '📄 ' + file.name;
         fileName.classList.remove('hidden');
-        // Limpa resultado anterior ao trocar arquivo
-        clearResult();
+        document.getElementById('step1-next-btn').disabled = false;
+        clearError();
       };
       reader.readAsText(file);
     }
 
-    // ── Monaco editor (lazy) ───────────────────────────────────
-    let editor = null;
-    let inferredSpec = null;
-    if (typeof require !== 'undefined') {
-      require.config({ paths: { vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.52.0/min/vs' }});
+    // Deriva resource_name do nome do arquivo:
+    // "insurance_response.json" → "insurance"
+    // "natural_person_response.json" → "naturalPerson"
+    function _resourceNameFromFile(filename) {
+      const stem = (filename || 'resource').replace(/\.[^.]+$/, '');
+      const noSuffix = stem.replace(/[_-]?(response|request|resp|req)$/i, '');
+      return noSuffix.replace(/_([a-z])/g, (_, c) => c.toUpperCase()) || 'resource';
     }
 
-    // ── Conversão ─────────────────────────────────────────────
-    convertBtn.addEventListener('click', doConvert);
+    // Desembrulha padrão de lista paginada {"results":[...],"total":N} → itens.
+    function _unwrapPaginatedPayload(obj) {
+      if (
+        obj && typeof obj === 'object' && !Array.isArray(obj) &&
+        Array.isArray(obj.results) && obj.results.length > 0 &&
+        Object.keys(obj).filter(k => !['results','total','page','pageSize','count','size'].includes(k)).length === 0
+      ) {
+        return obj.results;
+      }
+      return obj;
+    }
 
-    async function doConvert() {
+    // ── Fetch URL ─────────────────────────────────────────────
+    document.getElementById('fetch-url-btn').addEventListener('click', async () => {
+      const url = document.getElementById('api-url-input').value.trim();
+      if (!url) return;
+      setLoading(true);
+      clearError();
+      try {
+        const data = await _apiFetch('/v1/fetch-url', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ url, method: document.getElementById('url-method-select').value }),
+        });
+        specText = _repairMojibake(data.content);
+        currentFileName = 'url-import';
+        const labels = { openapi: 'OpenAPI 3.x', swagger: 'Swagger 2.0', payload: 'Payload JSON' };
+        const p = document.getElementById('url-detected-type');
+        p.textContent = '✓ ' + (labels[data.type] || data.type) + ' detectado';
+        p.classList.remove('hidden');
+        document.getElementById('step1-next-btn').disabled = false;
+      } catch (e) {
+        showError(e.message);
+      } finally {
+        setLoading(false);
+      }
+    });
+
+    // ── Avançar Passo 1 → 2 ──────────────────────────────────
+    document.getElementById('step1-next-btn').addEventListener('click', async () => {
       if (!specText) return;
       setLoading(true);
-      clearResult();
-
+      clearError();
       try {
-        // 1. Detect
-        const det = await fetch('/v1/detect', {
+        const det = await _apiFetch('/v1/detect', {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ content: specText })
-        }).then(r => r.json());
+        });
 
         if (det.type === 'payload') {
-          // 2. Infer
           let payloadObj;
           try { payloadObj = JSON.parse(specText); }
           catch (e) { throw new Error('JSON do payload inválido: ' + e.message); }
 
-          const inf = await fetch('/v1/infer-spec', {
+          const resourceName = _resourceNameFromFile(currentFileName || 'url-import');
+          const inferPayload = _unwrapPaginatedPayload(payloadObj);
+
+          if (Array.isArray(inferPayload) && inferPayload.length === 0) {
+            throw new Error('Payload é uma lista vazia — não é possível inferir o schema.');
+          }
+
+          const inf = await _apiFetch('/v1/infer-spec', {
             method: 'POST', headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ payload: payloadObj, resource_name: 'resource', method: 'POST' })
-          }).then(r => r.json());
+            body: JSON.stringify({
+              payload: Array.isArray(inferPayload) ? inferPayload[0] : inferPayload,
+              resource_name: resourceName,
+              method: 'GET'
+            })
+          });
 
-          inferredSpec = inf.spec;
-          setLoading(false);
-          _showSpecEditor(inf);
-          return;  // espera click "Confirmar"
+          _specWasPayload = true;
+          document.getElementById('fabricated-warning').textContent =
+            '⚠ Campos fabricados (revisar): ' + (inf.fabricated || []).join(', ');
+          enableStep(2);
+          goToStep(2);
+          _loadMonaco(JSON.stringify(inf.spec, null, 2));
+        } else {
+          _specWasPayload = false;
+          document.getElementById('fabricated-warning').textContent = '';
+          enableStep(2);
+          goToStep(2);
+          _loadMonaco(specText);
         }
-
-        // Spec real — converte direto
-        await _runConvert(specText);
       } catch (e) {
         showError(e.message);
+      } finally {
         setLoading(false);
       }
-    }
+    });
 
-    function _showSpecEditor(inferenceResult) {
-      document.getElementById('fabricated-warning').textContent =
-        '⚠ Campos fabricados (revisar): ' + inferenceResult.fabricated.join(', ');
-      document.getElementById('spec-edit-section').classList.remove('hidden');
+    // ── Monaco: inicializar / atualizar ───────────────────────
+    function _loadMonaco(text) {
+      if (typeof require === 'undefined') return;
       require(['vs/editor/editor.main'], function() {
-        if (editor) editor.dispose();
-        editor = monaco.editor.create(document.getElementById('monaco-container'), {
-          value: JSON.stringify(inferenceResult.spec, null, 2),
-          language: 'json',
-          automaticLayout: true,
-          minimap: { enabled: false },
-        });
+        if (editor) {
+          editor.setValue(text);
+        } else {
+          editor = monaco.editor.create(document.getElementById('monaco-container'), {
+            value: text,
+            language: 'json',
+            automaticLayout: true,
+            minimap: { enabled: false },
+          });
+        }
+        setTimeout(() => editor.layout(), 80);
       });
     }
 
-    document.getElementById('confirm-convert-btn').addEventListener('click', async () => {
-      const editedText = editor.getValue();
-      let editedSpec;
-      try { editedSpec = JSON.parse(editedText); }
-      catch (e) { showError('JSON inválido: ' + e.message); return; }
-
+    // ── Confirmar e Converter (Passo 2) ───────────────────────
+    document.getElementById('convert-btn').addEventListener('click', async () => {
       setLoading(true);
-      document.getElementById('spec-edit-section').classList.add('hidden');
-
+      clearError();
       try {
-        // 3. Validate
-        const val = await fetch('/v1/validate-spec', {
-          method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ spec: editedSpec })
-        }).then(r => r.json());
+        const editedText = editor ? editor.getValue() : specText;
 
-        if (!val.valid) {
-          showError('Spec inválido: ' + val.errors.join('; '));
-          document.getElementById('spec-edit-section').classList.remove('hidden');
-          setLoading(false);
-          return;
+        if (_specWasPayload) {
+          let editedSpec;
+          try { editedSpec = JSON.parse(editedText); }
+          catch (e) { throw new Error('JSON inválido: ' + e.message); }
+
+          const val = await _apiFetch('/v1/validate-spec', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ spec: editedSpec })
+          });
+
+          if (!val.valid) {
+            throw new Error('Spec inválido: ' + val.errors.join('; '));
+          }
+          await _runConvert(JSON.stringify(editedSpec));
+        } else {
+          await _runConvert(editedText);
         }
-
-        // 4. Convert
-        await _runConvert(JSON.stringify(editedSpec));
       } catch (e) {
         showError(e.message);
         setLoading(false);
       }
     });
 
-    document.getElementById('cancel-edit-btn').addEventListener('click', () => {
-      document.getElementById('spec-edit-section').classList.add('hidden');
-      if (editor) { editor.dispose(); editor = null; }
-      inferredSpec = null;
-    });
-
     async function _runConvert(spec) {
-      const res = await fetch('/v1/convert', {
+      const data = await _apiFetch('/v1/convert', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           spec,
           options: {
             async: false,
             model: modelSelect.value,
-            hapi_base_url: hapiUrl.value.trim()
+            hapi_base_url: document.getElementById('hapi-url').value.trim()
           }
         })
       });
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({ detail: res.statusText }));
-        throw new Error(err.detail ?? 'HTTP ' + res.status);
-      }
-      showResult(await res.json());
+      showResult(data);
       setLoading(false);
     }
 
-    // ── Resultado ─────────────────────────────────────────────
+    // ── Resultado → Passo 3 ───────────────────────────────────
     function showResult(data) {
       lastBundle = data.bundle;
-      const entries   = (lastBundle.entry ?? []);
-      const count     = entries.length;
-      const types     = [...new Set(entries.map(e => e.resource?.resourceType).filter(Boolean))].join(', ') || '—';
-      const bundleType = lastBundle.type ?? '—';
+      const entries    = (lastBundle?.entry ?? []);
+      const count      = entries.length;
+      const types      = [...new Set(entries.map(e => e.resource?.resourceType).filter(Boolean))].join(', ') || '—';
+      const bundleType = lastBundle?.type ?? '—';
 
-      statsEl.innerHTML =
-        '<dt>Job ID</dt><dd>' + escHtml(data.job_id) + '</dd>' +
-        '<dt>Status</dt><dd>' + escHtml(data.status) + '</dd>' +
-        '<dt>Entradas</dt><dd>' + count + '</dd>' +
-        '<dt>Tipos</dt><dd>' + escHtml(types) + '</dd>' +
-        '<dt>Bundle type</dt><dd>' + escHtml(bundleType) + '</dd>';
+      document.getElementById('stats').innerHTML =
+        '<dt>Job ID</dt><dd>'      + escHtml(data.job_id)  + '</dd>' +
+        '<dt>Status</dt><dd>'      + escHtml(data.status)  + '</dd>' +
+        '<dt>Entradas</dt><dd>'    + count                 + '</dd>' +
+        '<dt>Tipos</dt><dd>'       + escHtml(types)        + '</dd>' +
+        '<dt>Bundle type</dt><dd>' + escHtml(bundleType)   + '</dd>';
 
-      resultSect.classList.remove('hidden');
+      document.getElementById('bundle-summary').textContent =
+        count + ' recurso' + (count !== 1 ? 's' : '') +
+        ' pronto' + (count !== 1 ? 's' : '') + ' para publicar.';
+
+      enableStep(3);
+      goToStep(3);
     }
 
-    function clearResult() {
-      resultSect.classList.add('hidden');
-      errorBox.classList.add('hidden');
-      errorBox.innerHTML = '';
-      statsEl.innerHTML  = '';
-      lastBundle = null;
-    }
+    // ── Publicar no HAPI (Passo 3) ────────────────────────────
+    document.getElementById('publish-hapi-btn').addEventListener('click', async () => {
+      if (!lastBundle) return;
+      setLoading(true);
+      clearError();
+      try {
+        const data = await _apiFetch('/v1/store-bundle', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            bundle: lastBundle,
+            hapi_base_url: document.getElementById('hapi-url').value.trim(),
+          }),
+        });
+        lastStoredResources = data.stored;
 
-    function showError(msg) {
-      errorBox.innerHTML = '<strong>Erro na conversão</strong>' + escHtml(msg);
-      errorBox.classList.remove('hidden');
-    }
+        const list = document.getElementById('publish-results-list');
+        list.innerHTML = data.stored.map(r =>
+          '<li><span style="color:' + (r.status < 300 ? 'green' : 'red') + '">' +
+          (r.status < 300 ? '✓' : '✗') + ' HTTP ' + r.status +
+          '</span> — ' + escHtml(r.resource_type) + '/' + escHtml(r.resource_id) + '</li>'
+        ).join('') + (data.errors.length
+          ? '<li style="color:var(--red)">Erros: ' + escHtml(data.errors.join('; ')) + '</li>'
+          : '');
 
-    // ── Download client-side ──────────────────────────────────
-    downloadBtn.addEventListener('click', () => {
+        document.getElementById('step3-next-btn').disabled = false;
+        enableStep(4);
+      } catch (e) {
+        showError(e.message);
+      } finally {
+        setLoading(false);
+      }
+    });
+
+    document.getElementById('step3-next-btn').addEventListener('click', () => goToStep(4));
+
+    // ── Bundle $validate (Passo 3) ────────────────────────────
+    document.getElementById('bundle-validate-btn').addEventListener('click', async () => {
+      if (!lastBundle) { alert('Nenhum bundle na sessão. Execute o Passo 2 primeiro.'); return; }
+      const btn = document.getElementById('bundle-validate-btn');
+      const box = document.getElementById('bundle-validate-result');
+      btn.disabled = true;
+      btn.textContent = '⏳ Validando...';
+      box.classList.add('hidden');
+      try {
+        const outcome = await _apiFetch(`/fhir/Bundle/$validate`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/fhir+json' },
+          body: JSON.stringify(lastBundle),
+        });
+        const issues  = outcome.issue || [];
+        const errors  = issues.filter(i => ['error','fatal'].includes(i.severity));
+        const warns   = issues.filter(i => i.severity === 'warning');
+        const ok      = errors.length === 0;
+        box.style.borderColor = ok ? '#2e7d32' : '#c62828';
+        box.style.background  = ok ? '#f0f7f0' : '#fce8e6';
+        box.style.color       = ok ? '#2e7d32' : '#c62828';
+        const summary = ok
+          ? `✅ Bundle válido — ${warns.length} warning(s), 0 error(s).`
+          : `❌ ${errors.length} erro(s) encontrado(s):`;
+        const details = issues.slice(0, 20).map(iss => {
+          const loc = (iss.location || []).join(', ');
+          const msg = iss.diagnostics || iss.details?.text || '';
+          return `<div style="margin-top:.3rem;font-size:.8rem;"><strong>${escHtml(iss.severity)}</strong>` +
+            (loc ? ` <span style="color:#5f6368">${escHtml(loc)}</span>` : '') +
+            ` — ${escHtml(msg)}</div>`;
+        }).join('');
+        box.innerHTML = `<strong>${summary}</strong>${details}`;
+        box.classList.remove('hidden');
+      } catch (err) {
+        box.style.borderColor = '#c62828';
+        box.style.background  = '#fce8e6';
+        box.style.color       = '#c62828';
+        box.textContent = 'Erro ao contatar HAPI: ' + err.message;
+        box.classList.remove('hidden');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = '🔍 Validar Bundle ($validate)';
+      }
+    });
+
+    // ── Download bundle (Passo 3) ─────────────────────────────
+    document.getElementById('download-btn').addEventListener('click', () => {
       if (!lastBundle) return;
       const blob = new Blob([JSON.stringify(lastBundle, null, 2)], { type: 'application/json' });
       const url  = URL.createObjectURL(blob);
@@ -478,10 +946,59 @@
       URL.revokeObjectURL(url);
     });
 
+    // ── Verificar todos (Passo 4) ─────────────────────────────
+    document.getElementById('verify-all-btn').addEventListener('click', async () => {
+      if (!lastStoredResources.length) return;
+      setLoading(true);
+      clearError();
+      try {
+        const res = await fetch('/v1/verify-bundle', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            stored: lastStoredResources,
+            hapi_base_url: document.getElementById('hapi-url').value.trim(),
+          }),
+        });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const data = await res.json();
+        const tbody = document.getElementById('verify-results-body');
+        tbody.innerHTML = data.results.map(r => {
+          const getOk  = r.get_status === 200;
+          const valOk  = r.valid === true;
+          const errCnt = r.issues.filter(i => i.severity === 'error' || i.severity === 'fatal').length;
+          return '<tr>' +
+            '<td>' + escHtml(r.resource_type + '/' + r.resource_id) + '</td>' +
+            '<td style="color:' + (getOk ? 'green' : 'red') + '">' +
+              (getOk ? '✓' : '✗') + ' ' + r.get_status + '</td>' +
+            '<td style="color:' + (r.valid === null ? 'var(--gray)' : valOk ? 'green' : 'red') + '">' +
+              (r.valid === null ? '—' : valOk ? '✓' : '✗') + '</td>' +
+            '<td style="color:' + (errCnt > 0 ? 'red' : 'var(--gray)') + '">' +
+              (errCnt > 0 ? errCnt + ' erro(s)' : '—') + '</td>' +
+            '<td><a href="' + escHtml(r.fhir_url) + '" target="_blank" rel="noopener" ' +
+              'style="color:var(--blue)">🔗</a></td>' +
+          '</tr>';
+        }).join('');
+      } catch (e) {
+        showError(e.message);
+      } finally {
+        setLoading(false);
+      }
+    });
+
     // ── Helpers ───────────────────────────────────────────────
     function setLoading(on) {
-      convertBtn.disabled = on;
       spinner.classList.toggle('hidden', !on);
+    }
+
+    function clearError() {
+      errorBox.classList.add('hidden');
+      errorBox.innerHTML = '';
+    }
+
+    function showError(msg) {
+      errorBox.innerHTML = '<strong>Erro</strong> ' + escHtml(msg);
+      errorBox.classList.remove('hidden');
     }
 
     function escHtml(str) {
@@ -491,6 +1008,357 @@
         .replace(/>/g, '&gt;')
         .replace(/"/g, '&quot;');
     }
+
+    // Wrapper fetch que detecta resposta HTML (API fora) e devolve erro legível.
+    async function _apiFetch(url, options) {
+      let res;
+      try {
+        res = await fetch(url, options);
+      } catch (e) {
+        throw new Error('Sem conexão com o servidor — verifique se a API está em execução (porta 8000). Detalhes: ' + e.message);
+      }
+      const ct = res.headers.get('content-type') || '';
+      if (!ct.includes('json')) {
+        throw new Error('API indisponível (HTTP ' + res.status + ') — o servidor retornou HTML em vez de JSON. Verifique se a API está em execução na porta 8000.');
+      }
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.detail ?? 'HTTP ' + res.status);
+      return data;
+    }
+
+    // ── Main nav switching ────────────────────────────────────
+    (function () {
+      const masterHapiUrl = () => document.getElementById('hapi-url').value.trim();
+
+      document.querySelectorAll('.main-nav-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.main-nav-btn').forEach(b => b.classList.remove('active'));
+          document.querySelectorAll('.main-panel').forEach(p => p.classList.remove('active'));
+          btn.classList.add('active');
+          document.getElementById('main-panel-' + btn.dataset.mainTab).classList.add('active');
+          // Sincroniza HAPI URL do pipeline ao abrir os painéis
+          if (btn.dataset.mainTab === 'gerenciar') {
+            document.getElementById('manage-hapi-url').value = masterHapiUrl();
+          } else if (btn.dataset.mainTab === 'testes') {
+            document.getElementById('test-hapi-url').value = masterHapiUrl();
+          }
+        });
+      });
+    })();
+
+    // ── Gerenciar ─────────────────────────────────────────────
+    let manageResources = [];
+
+    function _manageRender() {
+      const tbody    = document.getElementById('manage-table-body');
+      const emptyMsg = document.getElementById('manage-empty-msg');
+      const table    = document.getElementById('manage-table');
+      tbody.innerHTML = '';
+      if (!manageResources.length) {
+        emptyMsg.classList.remove('hidden');
+        table.classList.add('hidden');
+        document.getElementById('manage-delete-selected').disabled = true;
+        document.getElementById('manage-delete-all').disabled = true;
+        return;
+      }
+      emptyMsg.classList.add('hidden');
+      table.classList.remove('hidden');
+      document.getElementById('manage-delete-all').disabled = false;
+
+      manageResources.forEach((r, i) => {
+        const delStatus = r._delStatus;
+        const statusBadge = delStatus != null
+          ? `<span class="badge ${delStatus === 200 || delStatus === 204 ? 'badge-ok' : 'badge-err'}">${delStatus} deletado</span>`
+          : `<span class="badge badge-gray">${escHtml(String(r.status))}</span>`;
+        const tr = document.createElement('tr');
+        tr.innerHTML =
+          `<td><input type="checkbox" class="manage-row-check" data-idx="${i}"${delStatus != null ? ' disabled' : ''}></td>` +
+          `<td>${escHtml(r.resource_type)}</td>` +
+          `<td>${escHtml(r.resource_id)}</td>` +
+          `<td style="font-size:.8rem;word-break:break-all">${escHtml(r.fhir_url || '')}</td>` +
+          `<td>${statusBadge}</td>`;
+        tbody.appendChild(tr);
+      });
+      _manageUpdateDeleteBtn();
+    }
+
+    function _manageUpdateDeleteBtn() {
+      const checked = document.querySelectorAll('.manage-row-check:checked').length;
+      document.getElementById('manage-delete-selected').disabled = checked === 0;
+    }
+
+    document.getElementById('manage-table-body').addEventListener('change', _manageUpdateDeleteBtn);
+
+    document.getElementById('manage-select-all').addEventListener('change', function () {
+      document.querySelectorAll('.manage-row-check:not(:disabled)').forEach(cb => {
+        cb.checked = this.checked;
+      });
+      _manageUpdateDeleteBtn();
+    });
+
+    document.getElementById('manage-load-session').addEventListener('click', () => {
+      if (!lastStoredResources.length) {
+        alert('Nenhum recurso na sessão atual. Execute o Passo 3 (Publicar) primeiro.');
+        return;
+      }
+      manageResources = lastStoredResources.map(r => ({ ...r }));
+      document.getElementById('manage-result-box').classList.add('hidden');
+      document.getElementById('manage-error-box').classList.add('hidden');
+      _manageRender();
+    });
+
+    document.getElementById('manage-search-btn').addEventListener('click', async () => {
+      const type    = document.getElementById('manage-type-filter').value;
+      const hapiUrl = document.getElementById('manage-hapi-url').value.trim();
+      if (!type) { alert('Selecione um tipo de recurso para buscar.'); return; }
+      const spinner = document.getElementById('manage-spinner');
+      const errBox  = document.getElementById('manage-error-box');
+      errBox.classList.add('hidden');
+      spinner.classList.remove('hidden');
+      try {
+        const url = `/fhir/${encodeURIComponent(type)}?_count=50&hapi_base_url=${encodeURIComponent(hapiUrl)}`;
+        const resp = await fetch(url);
+        if (!resp.ok) throw new Error('HTTP ' + resp.status);
+        const bundle = await resp.json();
+        const entries = bundle.entry || [];
+        const base = hapiUrl.replace(/\/$/, '');
+        manageResources = entries.map(e => ({
+          resource_type: e.resource?.resourceType || type,
+          resource_id:   e.resource?.id || '',
+          fhir_url:      `${base}/${e.resource?.resourceType || type}/${e.resource?.id || ''}`,
+          status:        200,
+        }));
+        document.getElementById('manage-result-box').classList.add('hidden');
+        _manageRender();
+        if (!entries.length) {
+          document.getElementById('manage-empty-msg').textContent =
+            `Nenhum recurso do tipo "${type}" encontrado no HAPI.`;
+        }
+      } catch (err) {
+        errBox.innerHTML = '<strong>Erro</strong> ' + escHtml(err.message);
+        errBox.classList.remove('hidden');
+      } finally {
+        spinner.classList.add('hidden');
+      }
+    });
+
+    async function _manageDoDelete(resources) {
+      const hapiUrl  = document.getElementById('manage-hapi-url').value.trim();
+      const spinner  = document.getElementById('manage-spinner');
+      const resultBox = document.getElementById('manage-result-box');
+      const errBox   = document.getElementById('manage-error-box');
+      errBox.classList.add('hidden');
+      spinner.classList.remove('hidden');
+      try {
+        const resp = await fetch('/v1/delete-resources', {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body:    JSON.stringify({ resources, hapi_base_url: hapiUrl }),
+        });
+        if (!resp.ok) throw new Error('HTTP ' + resp.status);
+        const data = await resp.json();
+
+        // Marca badges in-place
+        data.deleted.forEach(d => {
+          const idx = manageResources.findIndex(
+            r => r.resource_type === d.resource_type && r.resource_id === d.resource_id
+          );
+          if (idx >= 0) manageResources[idx]._delStatus = d.status;
+        });
+        // Remove os que foram deletados com sucesso
+        manageResources = manageResources.filter(
+          r => r._delStatus == null || (r._delStatus !== 200 && r._delStatus !== 204)
+        );
+        _manageRender();
+        resultBox.textContent = `✓ ${data.success_count}/${data.total} deletado(s) com sucesso.` +
+          (data.errors.length ? ` Erros: ${data.errors.length}.` : '');
+        resultBox.classList.remove('hidden');
+      } catch (err) {
+        errBox.innerHTML = '<strong>Erro ao deletar</strong> ' + escHtml(err.message);
+        errBox.classList.remove('hidden');
+      } finally {
+        spinner.classList.add('hidden');
+      }
+    }
+
+    document.getElementById('manage-delete-selected').addEventListener('click', () => {
+      const idxs = [...document.querySelectorAll('.manage-row-check:checked')].map(cb => +cb.dataset.idx);
+      const selected = idxs.map(i => manageResources[i]);
+      if (!confirm(`Deletar ${selected.length} recurso(s) selecionado(s)?\nEsta ação não pode ser desfeita.`)) return;
+      _manageDoDelete(selected);
+    });
+
+    document.getElementById('manage-delete-all').addEventListener('click', () => {
+      if (!confirm(`Deletar TODOS os ${manageResources.length} recursos?\nEsta ação não pode ser desfeita.`)) return;
+      _manageDoDelete([...manageResources]);
+    });
+
+    // ── Testes ────────────────────────────────────────────────
+    let testRows = [];
+
+    function _testBadge(row) {
+      if (!row.tested) return {
+        get:      '<span class="badge badge-gray">—</span>',
+        validate: '<span class="badge badge-gray">—</span>',
+        issues:   '<span class="badge badge-gray">0</span>',
+      };
+      const getOk  = row.get_status === 200;
+      const errCnt  = (row.issues || []).filter(i => ['error', 'fatal'].includes(i.severity)).length;
+      const warnCnt = (row.issues || []).filter(i => ['error', 'fatal', 'warning'].includes(i.severity)).length;
+      return {
+        get:      `<span class="badge ${getOk ? 'badge-ok' : 'badge-err'}">${row.get_status}</span>`,
+        validate: row.valid === null
+          ? '<span class="badge badge-gray">N/A</span>'
+          : `<span class="badge ${row.valid ? 'badge-ok' : 'badge-err'}">${row.valid ? 'PASS' : 'FAIL'}</span>`,
+        issues: warnCnt === 0
+          ? '<span class="badge badge-gray">0</span>'
+          : `<span class="badge ${errCnt > 0 ? 'badge-err' : 'badge-warn'}">${warnCnt}</span>`,
+      };
+    }
+
+    function _testRender() {
+      const tbody    = document.getElementById('test-table-body');
+      const emptyMsg = document.getElementById('test-empty-msg');
+      const table    = document.getElementById('test-table');
+      const runAll   = document.getElementById('test-run-all');
+      tbody.innerHTML = '';
+      if (!testRows.length) {
+        emptyMsg.classList.remove('hidden');
+        table.classList.add('hidden');
+        runAll.disabled = true;
+        return;
+      }
+      emptyMsg.classList.add('hidden');
+      table.classList.remove('hidden');
+      runAll.disabled = false;
+      testRows.forEach((row, i) => {
+        const b = _testBadge(row);
+        const issues = row.issues || [];
+        const hasIssues = row.tested && issues.length > 0;
+        const issuesBadge = hasIssues
+          ? `<span class="badge ${(issues.some(x => ['error','fatal'].includes(x.severity))) ? 'badge-err' : 'badge-warn'}" ` +
+            `style="cursor:pointer;" data-issue-toggle="${i}">${issues.length} ▾</span>`
+          : b.issues;
+        const tr = document.createElement('tr');
+        tr.innerHTML =
+          `<td>${escHtml(row.resource_type)}/${escHtml(row.resource_id)}</td>` +
+          `<td>${b.get}</td><td>${b.validate}</td><td>${issuesBadge}</td>` +
+          `<td><button class="test-run-one-btn" data-test-idx="${i}" ` +
+          `style="font-size:.8rem;padding:.25rem .6rem;cursor:pointer;">▶ Testar</button></td>`;
+        tbody.appendChild(tr);
+        if (hasIssues) {
+          const detail = document.createElement('tr');
+          detail.id = `issue-detail-${i}`;
+          detail.className = 'hidden';
+          detail.style.cssText = 'background:#fafafa;';
+          const detailRows = issues.map(iss => {
+            const sev = iss.severity || '';
+            const msg = iss.diagnostics || iss.details?.text || '';
+            const loc = (iss.location || []).join(', ');
+            const color = ['error','fatal'].includes(sev) ? 'var(--red)' : '#e65100';
+            return `<tr style="border-top:none;">` +
+              `<td colspan="5" style="padding:.3rem .75rem;font-size:.8rem;color:${color};">` +
+              `<strong>${escHtml(sev)}</strong>` +
+              (loc ? ` <span style="color:var(--gray)">${escHtml(loc)}</span>` : '') +
+              ` — ${escHtml(msg)}</td></tr>`;
+          }).join('');
+          detail.innerHTML = `<td colspan="5" style="padding:0;"><table style="width:100%;border-collapse:collapse;">${detailRows}</table></td>`;
+          tbody.appendChild(detail);
+        }
+      });
+    }
+
+    function _testShowSummary() {
+      const banner = document.getElementById('test-summary');
+      const tested = testRows.filter(r => r.tested);
+      if (!tested.length) { banner.classList.add('hidden'); return; }
+      const passed = tested.filter(r => r.valid === true).length;
+      const total  = tested.length;
+      banner.className = `summary-banner ${passed === total ? 'summary-ok' : 'summary-err'}`;
+      banner.textContent = passed === total
+        ? `✅ Todos os ${total} recurso(s) passaram (GET 200 + $validate PASS).`
+        : `❌ ${total - passed}/${total} recurso(s) com falhas — verifique a tabela.`;
+      banner.classList.remove('hidden');
+    }
+
+    async function _testRunOne(idx) {
+      const row        = testRows[idx];
+      const hapiUrl    = document.getElementById('test-hapi-url').value.trim();
+      const profileUrl = document.getElementById('test-profile-url').value.trim() || null;
+      const btn        = document.querySelector(`[data-test-idx="${idx}"]`);
+      if (btn) { btn.disabled = true; btn.textContent = '⏳'; }
+      try {
+        const body = {
+          stored: [{
+            resource_type: row.resource_type,
+            resource_id:   row.resource_id,
+            fhir_url:      row.fhir_url || '',
+            status:        row.status || 0,
+          }],
+          hapi_base_url: hapiUrl,
+        };
+        if (profileUrl) body.profile_url = profileUrl;
+        const resp = await fetch('/v1/verify-bundle', {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        });
+        if (!resp.ok) throw new Error('HTTP ' + resp.status);
+        const data   = await resp.json();
+        const result = data.results[0];
+        testRows[idx] = { ...row, tested: true, get_status: result.get_status,
+                          valid: result.valid, issues: result.issues };
+      } catch {
+        testRows[idx] = { ...row, tested: true, get_status: 0, valid: null, issues: [] };
+      }
+      _testRender();
+      _testShowSummary();
+    }
+
+    document.getElementById('test-table-body').addEventListener('click', e => {
+      const toggle = e.target.closest('[data-issue-toggle]');
+      if (toggle) {
+        const detail = document.getElementById(`issue-detail-${toggle.dataset.issueToggle}`);
+        if (detail) detail.classList.toggle('hidden');
+        return;
+      }
+      const btn = e.target.closest('[data-test-idx]');
+      if (btn) _testRunOne(+btn.dataset.testIdx);
+    });
+
+    document.getElementById('test-load-session').addEventListener('click', () => {
+      if (!lastStoredResources.length) {
+        alert('Nenhum recurso na sessão. Execute o Passo 3 (Publicar) primeiro.');
+        return;
+      }
+      testRows = lastStoredResources.map(r => ({ ...r, tested: false }));
+      document.getElementById('test-summary').classList.add('hidden');
+      document.getElementById('test-error-box').classList.add('hidden');
+      _testRender();
+    });
+
+    document.getElementById('test-add-btn').addEventListener('click', () => {
+      const type = document.getElementById('test-type-input').value;
+      const id   = document.getElementById('test-id-input').value.trim();
+      if (!type || !id) { alert('Selecione o tipo e informe o ID do recurso.'); return; }
+      if (testRows.some(r => r.resource_type === type && r.resource_id === id)) {
+        alert(`${type}/${id} já está na lista.`); return;
+      }
+      const hapiUrl = document.getElementById('test-hapi-url').value.trim().replace(/\/$/, '');
+      testRows.push({ resource_type: type, resource_id: id,
+                      fhir_url: `${hapiUrl}/${type}/${id}`, status: 0, tested: false });
+      document.getElementById('test-id-input').value = '';
+      _testRender();
+    });
+
+    document.getElementById('test-run-all').addEventListener('click', async () => {
+      const btn = document.getElementById('test-run-all');
+      btn.disabled = true;
+      btn.textContent = '⏳ Executando...';
+      for (let i = 0; i < testRows.length; i++) await _testRunOne(i);
+      btn.disabled = false;
+      btn.textContent = '▶ Executar Todos';
+    });
   </script>
 </body>
 </html>

@@ -17,6 +17,7 @@ members = [
     "fhir-forge-eval",
     "fhir-forge-fhir-forge",
     "fhir-forge-mcp-server",
+    "fhir-forge-mock-apis",
     "fhir-forge-spec-inferer",
     "fhir-forge-swagger-lens",
     "fhir-forge-term-mapper",
@@ -1035,29 +1036,43 @@ name = "fhir-forge-api"
 version = "0.1.0"
 source = { editable = "apps/api" }
 dependencies = [
+    { name = "anthropic" },
     { name = "fastapi" },
     { name = "fhir-forge-connectors" },
     { name = "fhir-forge-core" },
     { name = "fhir-forge-fhir-forge" },
+    { name = "fhir-forge-mcp-server" },
     { name = "fhir-forge-spec-inferer" },
     { name = "httpx" },
     { name = "opentelemetry-api" },
     { name = "opentelemetry-instrumentation-fastapi" },
     { name = "opentelemetry-sdk" },
+    { name = "psycopg", extra = ["binary", "pool"] },
+    { name = "pyyaml" },
+    { name = "redis" },
+    { name = "structlog" },
+    { name = "ulid-py" },
     { name = "uvicorn", extra = ["standard"] },
 ]
 
 [package.metadata]
 requires-dist = [
+    { name = "anthropic", specifier = ">=0.50" },
     { name = "fastapi", specifier = ">=0.115" },
     { name = "fhir-forge-connectors", editable = "packages/connectors" },
     { name = "fhir-forge-core", editable = "packages/core" },
     { name = "fhir-forge-fhir-forge", editable = "packages/fhir_forge" },
+    { name = "fhir-forge-mcp-server", editable = "packages/mcp_server" },
     { name = "fhir-forge-spec-inferer", editable = "packages/spec_inferer" },
     { name = "httpx", specifier = ">=0.28" },
     { name = "opentelemetry-api", specifier = ">=1.28" },
     { name = "opentelemetry-instrumentation-fastapi", specifier = ">=0.49b0" },
     { name = "opentelemetry-sdk", specifier = ">=1.28" },
+    { name = "psycopg", extras = ["binary", "pool"], specifier = ">=3.2" },
+    { name = "pyyaml", specifier = ">=6.0" },
+    { name = "redis", specifier = ">=5.2" },
+    { name = "structlog", specifier = ">=24.4" },
+    { name = "ulid-py", specifier = ">=1.1" },
     { name = "uvicorn", extras = ["standard"], specifier = ">=0.32" },
 ]
 
@@ -1178,6 +1193,21 @@ requires-dist = [
     { name = "httpx", specifier = ">=0.28" },
     { name = "pydantic", specifier = ">=2.9" },
     { name = "pydantic-settings", specifier = ">=2.6" },
+]
+
+[[package]]
+name = "fhir-forge-mock-apis"
+version = "0.1.0"
+source = { editable = "apps/mock_apis" }
+dependencies = [
+    { name = "fastapi" },
+    { name = "uvicorn", extra = ["standard"] },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "fastapi", specifier = ">=0.115" },
+    { name = "uvicorn", extras = ["standard"], specifier = ">=0.32" },
 ]
 
 [[package]]

@@ -29,23 +29,6 @@ def _extract_resource_types(bundle: dict[str, Any]) -> set[str]:
     return types
 
 
-def _extract_coding_systems(bundle: dict[str, Any]) -> set[str]:
-    """Collect all coding systems referenced in the bundle (best-effort)."""
-    systems: set[str] = set()
-
-    def _walk(node: Any) -> None:
-        if isinstance(node, dict):
-            if "system" in node and "code" in node:
-                systems.add(node["system"])
-            for v in node.values():
-                _walk(v)
-        elif isinstance(node, list):
-            for item in node:
-                _walk(item)
-
-    _walk(bundle)
-    return systems
-
 
 def fhir_precision(predicted: dict[str, Any], expected: dict[str, Any]) -> float:
     """Fraction of predicted resource types that appear in the expected bundle.

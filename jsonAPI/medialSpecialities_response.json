@@ -1,0 +1,173 @@
+[
+	{
+		"specialtyCode": 19,
+		"specialtyDescription": "Anestesiologia",
+		"minimumAge": 0,
+		"maximumAge": 0,
+		"gender": "A",
+		"specialtyIsActive": "S",
+		"scheduleCode": 81,
+		"scheduleDescription": "Consulta (Nova)"
+	},
+	{
+		"specialtyCode": 22,
+		"specialtyDescription": "Fisioterapia",
+		"additionalInformation": "Fisioterapia",
+		"minimumAge": 0,
+		"maximumAge": 0,
+		"specialtyIsActive": "S",
+		"scheduleCode": 7,
+		"scheduleDescription": "Fisioterapia"
+	},
+	{
+		"specialtyCode": 24,
+		"specialtyDescription": "Medicina Familiar",
+		"additionalInformation": "Medicina Familiar",
+		"minimumAge": 0,
+		"maximumAge": 0,
+		"gender": "A",
+		"specialtyIsActive": "S",
+		"scheduleCode": 87,
+		"scheduleDescription": "Medicina Familiar"
+	},
+	{
+		"specialtyCode": 26,
+		"specialtyDescription": "Cardiologia",
+		"minimumAge": 0,
+		"maximumAge": 0,
+		"gender": "A",
+		"specialtyIsActive": "S",
+		"scheduleCode": 17,
+		"scheduleDescription": "Consulta (Nova)",
+		"schedulePhysicianCode": "1",
+		"schedulePhysicianName": "Ana Paula Cardoso Ribeiro",
+		"specialtyExternalCode": "100"
+	},
+	{
+		"specialtyCode": 33,
+		"specialtyDescription": "Oncologia",
+		"minimumAge": 0,
+		"maximumAge": 0,
+		"gender": "A",
+		"specialtyIsActive": "S",
+		"scheduleCode": 76,
+		"scheduleDescription": "Consulta (Nova)",
+		"specialtyExternalCode": "101"
+	},
+	{
+		"specialtyCode": 33,
+		"specialtyDescription": "Oncologia",
+		"minimumAge": 0,
+		"maximumAge": 0,
+		"gender": "A",
+		"specialtyIsActive": "S",
+		"scheduleCode": 88,
+		"scheduleDescription": "Consulta (Nova)",
+		"schedulePhysicianCode": "2",
+		"schedulePhysicianName": "Rafael Augusto Cunha Oliveira",
+		"specialtyExternalCode": "101"
+	},
+	{
+		"specialtyCode": 33,
+		"specialtyDescription": "Oncologia",
+		"minimumAge": 0,
+		"maximumAge": 0,
+		"gender": "A",
+		"specialtyIsActive": "S",
+		"scheduleCode": 77,
+		"scheduleDescription": "Consulta (Nova)",
+		"schedulePhysicianCode": "1",
+		"schedulePhysicianName": "Ana Paula Cardoso Ribeiro",
+		"specialtyExternalCode": "101"
+	},
+	{
+		"specialtyCode": 37,
+		"specialtyDescription": "Pediatria",
+		"minimumAge": 0,
+		"maximumAge": 0,
+		"gender": "A",
+		"specialtyIsActive": "S",
+		"scheduleCode": 78,
+		"scheduleDescription": "Consulta (Nova)"
+	},
+	{
+		"specialtyCode": 44,
+		"specialtyDescription": "Neurologia",
+		"minimumAge": 0,
+		"maximumAge": 0,
+		"gender": "A",
+		"specialtyIsActive": "S",
+		"scheduleCode": 83,
+		"scheduleDescription": "Consulta (Nova)"
+	},
+	{
+		"specialtyCode": 46,
+		"specialtyDescription": "Obstetrícia e Ginecologia",
+		"minimumAge": 0,
+		"maximumAge": 0,
+		"gender": "A",
+		"specialtyIsActive": "S",
+		"scheduleCode": 79,
+		"scheduleDescription": "Consulta (Nova)"
+	},
+	{
+		"specialtyCode": 47,
+		"specialtyDescription": "Oftalmologia",
+		"minimumAge": 0,
+		"maximumAge": 0,
+		"gender": "A",
+		"specialtyIsActive": "S",
+		"scheduleCode": 74,
+		"scheduleDescription": "Consulta (Nova)"
+	},
+	{
+		"specialtyCode": 50,
+		"specialtyDescription": "Medicina Física e Reabilitação",
+		"additionalInformation": "Hidroginástica e Reabilitação",
+		"minimumAge": 0,
+		"maximumAge": 0,
+		"specialtyIsActive": "S",
+		"scheduleCode": 10,
+		"scheduleDescription": "Hidroginástica e Reabilitação"
+	},
+	{
+		"specialtyCode": 50,
+		"specialtyDescription": "Medicina Física e Reabilitação",
+		"additionalInformation": "Banco de Leite",
+		"minimumAge": 0,
+		"maximumAge": 0,
+		"specialtyIsActive": "S",
+		"scheduleCode": 15,
+		"scheduleDescription": "Banco de Leite"
+	},
+	{
+		"specialtyCode": 58,
+		"specialtyDescription": "Psiquiatria",
+		"minimumAge": 0,
+		"maximumAge": 0,
+		"gender": "A",
+		"specialtyIsActive": "S",
+		"scheduleCode": 80,
+		"scheduleDescription": "Consulta (Nova)"
+	},
+	{
+		"specialtyCode": 60,
+		"specialtyDescription": "Cirurgia Geral",
+		"minimumAge": 0,
+		"maximumAge": 0,
+		"gender": "A",
+		"specialtyIsActive": "S",
+		"scheduleCode": 71,
+		"scheduleDescription": "Consulta (Nova)"
+	},
+	{
+		"specialtyCode": 65,
+		"specialtyDescription": "Cirurgia Ortopédica",
+		"minimumAge": 0,
+		"maximumAge": 0,
+		"gender": "A",
+		"specialtyIsActive": "S",
+		"scheduleCode": 54,
+		"scheduleDescription": "Consulta (Nova)"
+	}
+]

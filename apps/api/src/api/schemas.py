@@ -31,6 +31,7 @@ class JobResponse(BaseModel):
     created_at: datetime | None = None
     completed_at: datetime | None = None
     errors: list[str] | None = None
+    replayable: bool | None = None
 
 
 class ServiceStatus(BaseModel):
@@ -55,7 +56,7 @@ class DetectRequest(BaseModel):
 
 
 class DetectResponse(BaseModel):
-    type: Literal["openapi", "swagger", "payload"]
+    type: Literal["openapi", "swagger", "payload", "curl"]
     version: str | None = None
 
 
@@ -78,3 +79,88 @@ class ValidateSpecRequest(BaseModel):
 class ValidateSpecResponse(BaseModel):
     valid: bool
     errors: list[str]
+
+
+# ── /v1/fetch-url ────────────────────────────────────────────────
+
+
+class FetchUrlRequest(BaseModel):
+    url: str = Field(..., description="URL to fetch (Swagger spec or API payload)")
+    method: str = "GET"
+    headers: dict[str, str] = Field(default_factory=dict)
+    timeout: float = 30.0
+
+
+class FetchUrlResponse(BaseModel):
+    content: str
+    type: Literal["openapi", "swagger", "payload", "curl"]
+    version: str | None = None
+    url: str
+    content_type: str = ""
+
+
+# ── /v1/store-bundle ─────────────────────────────────────────────
+
+
+class StoredResource(BaseModel):
+    resource_type: str
+    resource_id: str
+    fhir_url: str
+    status: int
+
+
+class StoreBundleRequest(BaseModel):
+    bundle: dict[str, Any]
+    hapi_base_url: str = "http://localhost:8090/fhir"
+
+
+class StoreBundleResponse(BaseModel):
+    stored: list[StoredResource]
+    errors: list[str]
+    total: int
+    success_count: int
+
+
+# ── /v1/verify-bundle ────────────────────────────────────────────
+
+
+class VerifiedResource(BaseModel):
+    resource_type: str
+    resource_id: str
+    fhir_url: str
+    get_status: int
+    valid: bool | None = None
+    issues: list[dict[str, Any]] = Field(default_factory=list)
+
+
+class VerifyBundleRequest(BaseModel):
+    stored: list[StoredResource]
+    hapi_base_url: str = "http://localhost:8090/fhir"
+    profile_url: str | None = None
+
+
+class VerifyBundleResponse(BaseModel):
+    results: list[VerifiedResource]
+    all_accessible: bool
+    all_valid: bool
+
+
+# ── /v1/delete-resources ─────────────────────────────────────────────
+
+
+class DeletedResource(BaseModel):
+    resource_type: str
+    resource_id: str
+    status: int  # 200/204 = sucesso, 404 = não encontrado, 4xx/5xx = erro
+
+
+class DeleteResourcesRequest(BaseModel):
+    resources: list[StoredResource]
+    hapi_base_url: str = "http://localhost:8090/fhir"
+
+
+class DeleteResourcesResponse(BaseModel):
+    deleted: list[DeletedResource]
+    errors: list[str]
+    total: int
+    success_count: int

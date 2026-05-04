@@ -18,7 +18,7 @@ def _stub_job_response() -> AsyncMock:
     """Returns a mock that pretends _run_conversion completed sync."""
     from api.schemas import JobResponse
 
-    async def _ret(body):
+    async def _ret(body, **kwargs):
         return JobResponse(
             job_id="01STUB",
             status="completed",
@@ -77,6 +77,36 @@ async def test_v1_convert_auto_infer_with_real_spec_passes_through(api_client) -
     assert r.status_code == 200
     forwarded_body = stub.call_args[0][0]
     assert forwarded_body.spec == _VALID_SPEC  # not replaced
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_v1_convert_curl_input_returns_422(api_client) -> None:
+    """auto_infer=true + curl command: deve retornar 422 com mensagem clara."""
+    stub = _stub_job_response()
+    curl_cmd = "curl --request GET --url https://api.example.com/patients --header 'accept: application/json'"
+    with patch("api.routers.v1.convert._run_conversion", new=stub):
+        r = await api_client.post(
+            "/v1/convert",
+            json={"spec": curl_cmd, "options": {"async": False, "auto_infer": True}},
+        )
+    assert r.status_code == 422
+    assert "curl" in r.text.lower()
+    stub.assert_not_called()
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_v1_convert_non_dict_payload_returns_422(api_client) -> None:
+    """auto_infer=true + payload que não é dict/list: deve retornar 422."""
+    stub = _stub_job_response()
+    with patch("api.routers.v1.convert._run_conversion", new=stub):
+        r = await api_client.post(
+            "/v1/convert",
+            json={"spec": '"just a string"', "options": {"async": False, "auto_infer": True}},
+        )
+    assert r.status_code == 422
+    stub.assert_not_called()
 
 
 @pytest.mark.unit

@@ -27,9 +27,9 @@ class DlqMiddleware(dramatiq.Middleware):
         retries = message.options.get("retries", 0)
         try:
             actor = broker.get_actor(message.actor_name)
-            max_retries = int(actor.options.get("max_retries", 21))
+            max_retries = int(actor.options.get("max_retries", 3))
         except Exception:
-            max_retries = 21
+            max_retries = 3
 
         if retries >= max_retries - 1:
             from worker.dlq_handler import handle_dead_letter

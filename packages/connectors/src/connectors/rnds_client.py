@@ -27,12 +27,16 @@ class RndsClient:
         cert_path: str | Path,
         cert_password: str,
         timeout: float = 30.0,
+        verify_ssl: bool = True,
+        ca_cert_path: str | None = None,
     ) -> None:
         self._base_url = base_url.rstrip("/")
         self._auth_url = auth_url.rstrip("/")
         self._cert_path = Path(cert_path)
         self._cert_password = cert_password
         self._timeout = timeout
+        self._verify_ssl = verify_ssl
+        self._ca_cert_path = ca_cert_path
 
         self._token: str | None = None
         self._token_expires_at: dt.datetime | None = None
@@ -43,8 +47,17 @@ class RndsClient:
 
     def _build_ssl_context(self) -> ssl.SSLContext:
         ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
-        ctx.check_hostname = False
-        ctx.verify_mode = ssl.CERT_NONE
+        if not self._verify_ssl:
+            # Homologação: RNDS usa CA interna — desabilitar verificação explicitamente
+            ctx.check_hostname = False
+            ctx.verify_mode = ssl.CERT_NONE
+        else:
+            # Produção: verificação completa
+            ctx.check_hostname = True
+            ctx.verify_mode = ssl.CERT_REQUIRED
+            if self._ca_cert_path:
+                ctx.load_verify_locations(cafile=self._ca_cert_path)
+            # else: usa CA store do sistema (ICP-Brasil está em distros atualizadas)
         ctx.load_cert_chain(
             certfile=str(self._cert_path),
             password=self._cert_password,

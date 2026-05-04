@@ -4,7 +4,6 @@ import json
 from typing import Any, Literal
 
 import yaml
-from core.exceptions import FhirForgeError
 from openapi_spec_validator import (
     OpenAPIV2SpecValidator,
     OpenAPIV30SpecValidator,
@@ -12,11 +11,8 @@ from openapi_spec_validator import (
 )
 from openapi_spec_validator.validation.exceptions import OpenAPIValidationError
 
+from .exceptions import SpecParseError
 from .models import Endpoint, Parameter, SwaggerSpec
-
-
-class SpecParseError(FhirForgeError):
-    """Raised when an OpenAPI spec cannot be parsed or validated."""
 
 
 def parse_spec(

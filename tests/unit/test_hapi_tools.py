@@ -96,10 +96,11 @@ async def test_search_resources_single_page() -> None:
 
     with respx.mock:
         respx.get(f"{HAPI_BASE}/Patient").mock(return_value=Response(200, json=bundle))
-        results = await search_resources("Patient", "family=Silva")
+        result = await search_resources("Patient", "family=Silva")
 
-    assert len(results) == 2
-    assert results[0]["id"] == "p1"
+    assert result["returned"] == 2
+    assert result["truncated"] is False
+    assert result["results"][0]["id"] == "p1"
 
 
 @pytest.mark.unit
@@ -120,9 +121,29 @@ async def test_search_resources_paginated() -> None:
     with respx.mock:
         respx.get(f"{HAPI_BASE}/Patient").mock(return_value=Response(200, json=page1))
         respx.get(_PAGE2_URL).mock(return_value=Response(200, json=page2))
-        results = await search_resources("Patient", "family=Santos")
+        result = await search_resources("Patient", "family=Santos")
 
-    assert len(results) == 60
+    assert result["returned"] == 60
+    assert result["truncated"] is False
+
+
+@pytest.mark.unit
+async def test_search_resources_truncated_at_200() -> None:
+    """When a next page exists after 200 results, truncated=True is set."""
+    _PAGE2_URL = "http://hapi-truncate.test/fhir/Patient"
+    page1 = {
+        "resourceType": "Bundle",
+        "entry": [{"resource": {"resourceType": "Patient", "id": f"p{i}"}} for i in range(200)],
+        "link": [{"relation": "next", "url": _PAGE2_URL}],
+    }
+
+    with respx.mock:
+        respx.get(f"{HAPI_BASE}/Patient").mock(return_value=Response(200, json=page1))
+        result = await search_resources("Patient", "family=Muitos")
+
+    assert result["returned"] == 200
+    assert result["truncated"] is True
+    assert result["total"] == 200
 
 
 @pytest.mark.unit

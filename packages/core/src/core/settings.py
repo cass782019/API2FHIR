@@ -6,11 +6,13 @@ from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
     # ── Postgres ──────────────────────────────────────────────────────────────
+    postgres_host: str = "localhost"
     postgres_user: str = "forge"
     postgres_password: SecretStr = SecretStr("forge_dev_change_me")
     postgres_port: int = 5432
 
     # ── Redis ─────────────────────────────────────────────────────────────────
+    redis_host: str = "localhost"
     redis_port: int = 6379
 
     # ── MinIO ─────────────────────────────────────────────────────────────────
@@ -26,6 +28,7 @@ class Settings(BaseSettings):
     hapi_base_url: str = "http://localhost:8090/fhir"
 
     # ── Snowstorm ─────────────────────────────────────────────────────────────
+    snowstorm_host: str = "localhost"
     snowstorm_port: int = 8080
     es_port: int = 9200
 
@@ -77,6 +80,8 @@ class Settings(BaseSettings):
     rnds_cnes: str = ""
     rnds_cnpj_autorizador: str = ""
     rnds_requesting_professional_cpf: str = ""
+    rnds_verify_ssl: bool = True
+    rnds_ca_cert_path: str | None = None  # path para CA chain do MS em produção
 
     # ── Application ───────────────────────────────────────────────────────────
     env: str = "development"
@@ -101,25 +106,38 @@ class Settings(BaseSettings):
         pw = self.postgres_password.get_secret_value()
         return (
             f"postgresql+psycopg://{self.postgres_user}:{pw}"
-            f"@localhost:{self.postgres_port}/forge"
+            f"@{self.postgres_host}:{self.postgres_port}/forge"
         )
 
     @property
     def langgraph_db_url(self) -> str:
-        """DSN for the 'langgraph' checkpoints database."""
+        """DSN for the 'langgraph' checkpoints database (SQLAlchemy format)."""
         pw = self.postgres_password.get_secret_value()
         return (
             f"postgresql+psycopg://{self.postgres_user}:{pw}"
-            f"@localhost:{self.postgres_port}/langgraph"
+            f"@{self.postgres_host}:{self.postgres_port}/langgraph"
+        )
+
+    @property
+    def langgraph_checkpoint_dsn(self) -> str:
+        """Native psycopg DSN for AsyncPostgresSaver.from_conn_string().
+
+        AsyncPostgresSaver expects a plain postgresql:// DSN, not the
+        SQLAlchemy postgresql+psycopg:// variant.
+        """
+        pw = self.postgres_password.get_secret_value()
+        return (
+            f"postgresql://{self.postgres_user}:{pw}"
+            f"@{self.postgres_host}:{self.postgres_port}/langgraph"
         )
 
     @property
     def redis_url(self) -> str:
-        return f"redis://localhost:{self.redis_port}"
+        return f"redis://{self.redis_host}:{self.redis_port}"
 
     @property
     def snowstorm_base_url(self) -> str:
-        return f"http://localhost:{self.snowstorm_port}"
+        return f"http://{self.snowstorm_host}:{self.snowstorm_port}"
 
 
 settings = Settings()

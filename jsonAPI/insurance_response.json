@@ -1,0 +1,293 @@
+{
+	"results": [
+		{
+			"insuranceId": 1,
+			"insuranceDescription": "Particular",
+			"status": "ACTIVE",
+			"ansCode": "321",
+			"insuranceType": "SELF_PAYMENT",
+			"inclusionDate": "2000-01-01T02:00:00Z",
+			"cancellationDate": null,
+			"legalEntityCode": "58295213000178",
+			"corporateName": "Philips - EFT",
+			"commercialName": "Philips - EFT",
+			"personType": null,
+			"categories": [
+				{
+					"categoryId": "1",
+					"categoryDescription": "Particular",
+					"status": "ACTIVE",
+					"accommodation": {
+						"accommodationTypeId": 1,
+						"accommodationTypeDescription": "Quarto Privado",
+						"accommodationLevel": 20,
+						"status": "ACTIVE"
+					},
+					"insuranceCategoryPlan": []
+				}
+			],
+			"plans": [
+				{
+					"insurancePlanId": "01",
+					"planDescription": "Privado",
+					"status": "ACTIVE",
+					"ansPlanCode": null
+				}
+			]
+		},
+		{
+			"insuranceId": 3,
+			"insuranceDescription": "Philips Convênio - AMB",
+			"status": "ACTIVE",
+			"ansCode": null,
+			"insuranceType": "PRIVATE",
+			"inclusionDate": "2000-01-01T02:00:00Z",
+			"cancellationDate": null,
+			"legalEntityCode": "01950338000177",
+			"corporateName": "Philips Clinical Informatics - Sistemas de Informação Ltda",
+			"commercialName": "BNU - Philips Clinical Informatics",
+			"personType": null,
+			"categories": [
+				{
+					"categoryId": "1",
+					"categoryDescription": "Coletivo",
+					"status": "ACTIVE",
+					"accommodation": {
+						"accommodationTypeId": 4,
+						"accommodationTypeDescription": "Quarto Compartilhado",
+						"accommodationLevel": 15,
+						"status": "ACTIVE"
+					},
+					"insuranceCategoryPlan": [
+						{
+							"sequenceId": 7,
+							"establishmentId": "1",
+							"planId": "1",
+							"planDescription": "Único",
+							"updateDate": "2025-08-18T17:09:12Z",
+							"expirationDate": null,
+							"initialDate": null,
+							"status": "ACTIVE",
+							"ansPlanCode": null
+						}
+					]
+				},
+				{
+					"categoryId": "2",
+					"categoryDescription": "Individual",
+					"status": "ACTIVE",
+					"accommodation": {
+						"accommodationTypeId": 1,
+						"accommodationTypeDescription": "Quarto Privado",
+						"accommodationLevel": 20,
+						"status": "ACTIVE"
+					},
+					"insuranceCategoryPlan": []
+				}
+			],
+			"plans": [
+				{
+					"insurancePlanId": "1",
+					"planDescription": "Level 1",
+					"status": "ACTIVE",
+					"ansPlanCode": null
+				},
+				{
+					"insurancePlanId": "2",
+					"planDescription": "Level 2",
+					"status": "ACTIVE",
+					"ansPlanCode": null
+				},
+				{
+					"insurancePlanId": "3",
+					"planDescription": "Level 3",
+					"status": "ACTIVE",
+					"ansPlanCode": null
+				}
+			]
+		},
+		{
+			"insuranceId": 4,
+			"insuranceDescription": "SUS -  Sistema Único de Saúde",
+			"status": "ACTIVE",
+			"ansCode": null,
+			"insuranceType": "SUS",
+			"inclusionDate": "2016-06-20T03:00:00Z",
+			"cancellationDate": null,
+			"legalEntityCode": "00394544000851",
+			"corporateName": "Sistema Único de Saúde - SUS",
+			"commercialName": "Sistema Único de Saúde - SUS",
+			"personType": null,
+			"categories": [
+				{
+					"categoryId": "1",
+					"categoryDescription": "SUS",
+					"status": "ACTIVE",
+					"accommodation": {
+						"accommodationTypeId": 2,
+						"accommodationTypeDescription": "Setor sem acomodação",
+						"accommodationLevel": 1,
+						"status": "ACTIVE"
+					},
+					"insuranceCategoryPlan": []
+				}
+			],
+			"plans": [
+				{
+					"insurancePlanId": "1",
+					"planDescription": "Nacional",
+					"status": "ACTIVE",
+					"ansPlanCode": null
+				}
+			]
+		},
+		{
+			"insuranceId": 5,
+			"insuranceDescription": "Convênio - Modelo",
+			"status": "ACTIVE",
+			"ansCode": "123456",
+			"insuranceType": "PRIVATE",
+			"inclusionDate": "2000-01-01T02:00:00Z",
+			"cancellationDate": null,
+			"legalEntityCode": "92693118000160",
+			"corporateName": "Convênio - Modelo",
+			"commercialName": "Convênio - Modelo",
+			"personType": null,
+			"categories": [
+				{
+					"categoryId": "1",
+					"categoryDescription": "Silver",
+					"status": "ACTIVE",
+					"accommodation": {
+						"accommodationTypeId": 2,
+						"accommodationTypeDescription": "Setor sem acomodação",
+						"accommodationLevel": 1,
+						"status": "ACTIVE"
+					},
+					"insuranceCategoryPlan": []
+				},
+				{
+					"categoryId": "2",
+					"categoryDescription": "Gold",
+					"status": "ACTIVE",
+					"accommodation": {
+						"accommodationTypeId": 1,
+						"accommodationTypeDescription": "Quarto Privado",
+						"accommodationLevel": 20,
+						"status": "ACTIVE"
+					},
+					"insuranceCategoryPlan": []
+				}
+			],
+			"plans": [
+				{
+					"insurancePlanId": "01",
+					"planDescription": "Silver",
+					"status": "ACTIVE",
+					"ansPlanCode": "1"
+				},
+				{
+					"insurancePlanId": "02",
+					"planDescription": "Gold",
+					"status": "ACTIVE",
+					"ansPlanCode": "2"
+				},
+				{
+					"insurancePlanId": "03",
+					"planDescription": "PLano Prata",
+					"status": "ACTIVE",
+					"ansPlanCode": null
+				}
+			]
+		},
+		{
+			"insuranceId": 6,
+			"insuranceDescription": "Convênio SS",
+			"status": "ACTIVE",
+			"ansCode": null,
+			"insuranceType": "PRIVATE",
+			"inclusionDate": "2000-01-01T02:00:00Z",
+			"cancellationDate": null,
+			"legalEntityCode": "20230822000101",
+			"corporateName": "Souza e Schmidt Insurance HealthCare",
+			"commercialName": "Souza e Schmidt Insurance HealthCare",
+			"personType": null,
+			"categories": [
+				{
+					"categoryId": "1",
+					"categoryDescription": "Plus",
+					"status": "ACTIVE",
+					"accommodation": {
+						"accommodationTypeId": 2,
+						"accommodationTypeDescription": "Setor sem acomodação",
+						"accommodationLevel": 1,
+						"status": "ACTIVE"
+					},
+					"insuranceCategoryPlan": []
+				}
+			],
+			"plans": [
+				{
+					"insurancePlanId": "ONCO01",
+					"planDescription": "Plus",
+					"status": "ACTIVE",
+					"ansPlanCode": null
+				},
+				{
+					"insurancePlanId": "01",
+					"planDescription": "Plus +",
+					"status": "ACTIVE",
+					"ansPlanCode": null
+				}
+			]
+		},
+		{
+			"insuranceId": 7,
+			"insuranceDescription": "Sistema Único de Saúde - SUS",
+			"status": "INACTIVE",
+			"ansCode": null,
+			"insuranceType": "SUS",
+			"inclusionDate": "2024-07-04T09:05:17Z",
+			"cancellationDate": null,
+			"legalEntityCode": "00394544000851",
+			"corporateName": "Sistema Único de Saúde - SUS",
+			"commercialName": "Sistema Único de Saúde - SUS",
+			"personType": null,
+			"categories": [
+				{
+					"categoryId": "1",
+					"categoryDescription": "SUS",
+					"status": "ACTIVE",
+					"accommodation": {
+						"accommodationTypeId": 8,
+						"accommodationTypeDescription": "Enfermaria",
+						"accommodationLevel": 10,
+						"status": "ACTIVE"
+					},
+					"insuranceCategoryPlan": [
+						{
+							"sequenceId": 6,
+							"establishmentId": "1",
+							"planId": "1",
+							"planDescription": "Único",
+							"updateDate": "2024-07-04T09:12:10Z",
+							"expirationDate": null,
+							"initialDate": "2024-01-01T03:00:00Z",
+							"status": "ACTIVE",
+							"ansPlanCode": null
+						}
+					]
+				}
+			],
+			"plans": [
+				{
+					"insurancePlanId": "1",
+					"planDescription": "Único",
+					"status": "ACTIVE",
+					"ansPlanCode": null
+				}
+			]
+		}
+	],
+	"total": 6
+}

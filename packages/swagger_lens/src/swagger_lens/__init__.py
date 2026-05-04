@@ -1,3 +1,5 @@
 from __future__ import annotations
 
-__all__: list[str] = []
+from swagger_lens.exceptions import SpecParseError
+
+__all__ = ["SpecParseError"]

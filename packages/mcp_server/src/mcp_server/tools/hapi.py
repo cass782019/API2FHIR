@@ -9,8 +9,9 @@ import json
 from typing import Any
 
 import httpx
+from core.settings import settings as core_settings
 
-from ..settings import settings
+from ..settings import settings as mcp_settings
 
 
 async def validate_resource(
@@ -32,10 +33,10 @@ async def validate_resource(
     """
     resource = json.loads(resource_json)
     resource_type = resource.get("resourceType", "Resource")
-    url = f"{settings.hapi_base_url}/{resource_type}/$validate"
+    url = f"{core_settings.hapi_base_url}/{resource_type}/$validate"
     params = {"profile": profile_url} if profile_url else {}
 
-    async with httpx.AsyncClient(timeout=settings.hapi_timeout) as client:
+    async with httpx.AsyncClient(timeout=mcp_settings.hapi_timeout) as client:
         response = await client.post(url, json=resource, params=params)
         outcome = response.json()
 
@@ -66,9 +67,9 @@ async def get_resource(resource_type: str, resource_id: str) -> dict[str, Any]:
     Returns:
         The FHIR resource as a dict, or {"error": "not_found"} if 404.
     """
-    url = f"{settings.hapi_base_url}/{resource_type}/{resource_id}"
+    url = f"{core_settings.hapi_base_url}/{resource_type}/{resource_id}"
 
-    async with httpx.AsyncClient(timeout=settings.hapi_timeout) as client:
+    async with httpx.AsyncClient(timeout=mcp_settings.hapi_timeout) as client:
         response = await client.get(url)
 
     if response.status_code == 404:
@@ -78,7 +79,7 @@ async def get_resource(resource_type: str, resource_id: str) -> dict[str, Any]:
     return response.json()  # type: ignore[no-any-return]
 
 
-async def search_resources(resource_type: str, params: str) -> list[dict[str, Any]]:
+async def search_resources(resource_type: str, params: str) -> dict[str, Any]:
     """Search for FHIR resources of a given type.
 
     Args:
@@ -87,17 +88,21 @@ async def search_resources(resource_type: str, params: str) -> list[dict[str, An
             Use standard FHIR search parameters.
 
     Returns:
-        List of matching FHIR resource dicts (all pages, up to 200 entries).
+        dict with keys:
+            - results (list[dict]): Matching FHIR resource dicts (up to 200).
+            - truncated (bool): True if more than 200 results exist.
+            - total (int): Total number of results fetched before truncation.
+            - returned (int): Number of results in this response.
     """
-    url = f"{settings.hapi_base_url}/{resource_type}"
+    url = f"{core_settings.hapi_base_url}/{resource_type}"
     query = dict(pair.split("=", 1) for pair in params.split("&") if "=" in pair)
     query["_count"] = "50"
 
-    results: list[dict[str, Any]] = []
+    all_results: list[dict[str, Any]] = []
     next_url: str | None = url
 
-    async with httpx.AsyncClient(timeout=settings.hapi_timeout) as client:
-        while next_url and len(results) < 200:
+    async with httpx.AsyncClient(timeout=mcp_settings.hapi_timeout) as client:
+        while next_url and len(all_results) < 200:
             if next_url == url:
                 response = await client.get(next_url, params=query)
             else:
@@ -106,7 +111,7 @@ async def search_resources(resource_type: str, params: str) -> list[dict[str, An
             bundle = response.json()
 
             for entry in bundle.get("entry", []):
-                results.append(entry.get("resource", {}))
+                all_results.append(entry.get("resource", {}))
 
             next_url = next(
                 (
@@ -117,7 +122,14 @@ async def search_resources(resource_type: str, params: str) -> list[dict[str, An
                 None,
             )
 
-    return results
+    truncated = next_url is not None  # still a next page after hitting 200 limit
+    returned = all_results[:200]
+    return {
+        "results": returned,
+        "truncated": truncated,
+        "total": len(all_results),
+        "returned": len(returned),
+    }
 
 
 async def expand_valueset(valueset_url: str, filter: str | None = None) -> list[dict[str, Any]]:
@@ -131,12 +143,12 @@ async def expand_valueset(valueset_url: str, filter: str | None = None) -> list[
     Returns:
         List of Coding dicts with keys: system, code, display.
     """
-    url = f"{settings.hapi_base_url}/ValueSet/$expand"
+    url = f"{core_settings.hapi_base_url}/ValueSet/$expand"
     params: dict[str, str] = {"url": valueset_url, "count": "500"}
     if filter:
         params["filter"] = filter
 
-    async with httpx.AsyncClient(timeout=settings.hapi_timeout) as client:
+    async with httpx.AsyncClient(timeout=mcp_settings.hapi_timeout) as client:
         response = await client.get(url, params=params)
     response.raise_for_status()
 

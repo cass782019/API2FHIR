@@ -256,3 +256,50 @@ async def test_mapping_node_repairs_mojibake_in_llm_output() -> None:
     name = result["fhir_resources"][0]["name"][0]
     assert name["family"] == "João"
     assert name["given"] == ["médico"]
+
+
+_COVERAGE_RESOURCE = {
+    "resourceType": "Coverage",
+    "id": "createInsurance-example",
+    "status": "active",
+    "type": {
+        "coding": [
+            {
+                "system": "http://terminology.hl7.org/CodeSystem/coverage-type",
+                "code": "pay",
+                "display": "pay",
+            }
+        ]
+    },
+    "subscriber": {"reference": "Patient/patient-example"},
+    "subscriberId": "INS-000000001",
+    "beneficiary": {"reference": "Patient/patient-example"},
+    "payor": [
+        {
+            "identifier": {"system": "http://www.ans.gov.br/", "value": "000000"},
+            "display": "Operadora Exemplo",
+        }
+    ],
+    "period": {"start": "2024-01-01"},
+}
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_mapping_node_coverage_resource() -> None:
+    """Coverage few-shot produces a resource with type.coding and payor."""
+    from fhir_forge.nodes.mapping_node import mapping_node
+
+    state = _make_state(
+        [Endpoint(path="/insurances", method="POST", operation_id="createInsurance", tags=["insurance"])]
+    )
+    client = _make_mock_client(_COVERAGE_RESOURCE)
+    result = await mapping_node(state, client=client, model="test-model")
+    assert len(result["fhir_resources"]) == 1
+    r = result["fhir_resources"][0]
+    assert r["resourceType"] == "Coverage"
+    assert "type" in r
+    assert "coding" in r["type"]
+    assert r["type"]["coding"][0]["code"] == "pay"
+    assert "payor" in r
+    assert r["payor"][0]["display"] == "Operadora Exemplo"

@@ -9,10 +9,17 @@ dependencies = [
     "opentelemetry-api>=1.28",
     "opentelemetry-sdk>=1.28",
     "opentelemetry-instrumentation-fastapi>=0.49b0",
+    "redis>=5.2",
+    "anthropic>=0.50",
+    "structlog>=24.4",
+    "ulid-py>=1.1",
+    "PyYAML>=6.0",
+    "psycopg[binary,pool]>=3.2",
     "fhir-forge-core",
     "fhir-forge-fhir-forge",
     "fhir-forge-connectors",
     "fhir-forge-spec-inferer",
+    "fhir-forge-mcp-server",
 ]
 
 [build-system]
@@ -27,3 +34,4 @@ fhir-forge-core = { workspace = true }
 fhir-forge-fhir-forge = { workspace = true }
 fhir-forge-connectors = { workspace = true }
 fhir-forge-spec-inferer = { workspace = true }
+fhir-forge-mcp-server = { workspace = true }

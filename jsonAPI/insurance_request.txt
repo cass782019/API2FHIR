@@ -1,0 +1,6 @@
+curl --request GET \
+  --url 'https://api-gateway.b7ad-use1.30e5c8e.hsp.philips.com/v1/insurances/resources/api/v2/insurances/catalog?page=1&size=50' \
+  --header 'Authorization: Bearer OTRjNTk5ODktMGM5Ny00MDJjLWFmNmEtYmEyNzBiMThiZjQzOmE5NzIwODdiLTYzMDUtNDZiOC1hOTFlLWMwNTI0ZWEwYjg1Mg==' \
+  --header 'accept: application/json'
+  
+ 

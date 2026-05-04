@@ -1,10 +1,13 @@
 from __future__ import annotations
 
+from typing import Any
+
 import anthropic
+import redis as redis_lib
 import structlog
 import ulid
 from core.settings import settings
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fhir_forge.service import convert
 from swagger_lens.parser import parse_spec
 
@@ -22,17 +25,18 @@ router = APIRouter()
     tags=["conversion"],
     dependencies=[Depends(require_auth)],
 )
-async def convert_spec(body: ConvertRequest) -> JobResponse:
+async def convert_spec(body: ConvertRequest, request: Request) -> JobResponse:
     """Convert an OpenAPI/Swagger spec into a FHIR R4 Bundle.
 
     Set ``options.async`` to ``true`` to enqueue the conversion as a
     background job (returns immediately with a job_id). Otherwise the
     conversion runs synchronously and the bundle is returned in the response.
     """
-    return await _run_conversion(body)
+    checkpointer = getattr(request.app.state, "checkpointer", None)
+    return await _run_conversion(body, checkpointer=checkpointer)
 
 
-async def _run_conversion(body: ConvertRequest) -> JobResponse:
+async def _run_conversion(body: ConvertRequest, checkpointer: Any = None) -> JobResponse:
     """Pure conversion logic — callable from /convert and /v1/convert."""
     try:
         spec = parse_spec(body.spec.encode(), fmt="auto")
@@ -50,6 +54,10 @@ async def _run_conversion(body: ConvertRequest) -> JobResponse:
                 convert_spec_actor,  # type: ignore[import-not-found]
             )
 
+            # Salva payload para possível replay após DLQ (TTL: 7 dias)
+            _r = redis_lib.from_url(settings.redis_url)
+            _r.set(f"worker:payload:{job_id}", body.spec, ex=86400 * 7)
+
             convert_spec_actor.send(job_id, body.spec)
             return JobResponse(job_id=job_id, status="pending")
         except (ImportError, RuntimeError):
@@ -65,6 +73,7 @@ async def _run_conversion(body: ConvertRequest) -> JobResponse:
             client=client,
             model=body.options.model,
             hapi_base_url=body.options.hapi_base_url,
+            checkpointer=checkpointer,
         )
     except Exception as exc:
         log.error("convert_failed", job_id=job_id, error=str(exc))

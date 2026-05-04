@@ -27,6 +27,8 @@ def mock_redis() -> MagicMock:
 
 @pytest.mark.unit
 def test_handle_dead_letter_saves_failed_status(mock_redis: MagicMock) -> None:
+    mock_redis.exists.return_value = 0  # no payload stored
+
     with patch("worker.dlq_handler._redis_client", return_value=mock_redis):
         from worker.dlq_handler import handle_dead_letter
 
@@ -42,6 +44,8 @@ def test_handle_dead_letter_saves_failed_status(mock_redis: MagicMock) -> None:
 
 @pytest.mark.unit
 def test_handle_dead_letter_status_is_failed(mock_redis: MagicMock) -> None:
+    mock_redis.exists.return_value = 0
+
     with patch("worker.dlq_handler._redis_client", return_value=mock_redis):
         from worker.dlq_handler import handle_dead_letter
 
@@ -50,6 +54,36 @@ def test_handle_dead_letter_status_is_failed(mock_redis: MagicMock) -> None:
     call_args = mock_redis.set.call_args
     saved = json.loads(call_args[0][1])
     assert saved["status"] == "failed"
+
+
+@pytest.mark.unit
+def test_handle_dead_letter_replayable_true_when_payload_exists(mock_redis: MagicMock) -> None:
+    """DLQ sets replayable=True when worker:payload:{job_id} exists in Redis."""
+    mock_redis.exists.return_value = 1  # payload present
+
+    with patch("worker.dlq_handler._redis_client", return_value=mock_redis):
+        from worker.dlq_handler import handle_dead_letter
+
+        handle_dead_letter("job_replay", "RuntimeError: oops")
+
+    call_args = mock_redis.set.call_args
+    saved = json.loads(call_args[0][1])
+    assert saved["replayable"] is True
+
+
+@pytest.mark.unit
+def test_handle_dead_letter_replayable_false_when_no_payload(mock_redis: MagicMock) -> None:
+    """DLQ sets replayable=False when worker:payload:{job_id} is absent."""
+    mock_redis.exists.return_value = 0
+
+    with patch("worker.dlq_handler._redis_client", return_value=mock_redis):
+        from worker.dlq_handler import handle_dead_letter
+
+        handle_dead_letter("job_no_payload", "some error")
+
+    call_args = mock_redis.set.call_args
+    saved = json.loads(call_args[0][1])
+    assert saved["replayable"] is False
 
 
 @pytest.mark.unit
@@ -136,3 +170,31 @@ def test_dlq_middleware_sends_on_exactly_third_failure() -> None:
     # Only the third failure (retries=2) should trigger the DLQ
     mock_dlq.send.assert_called_once()
     assert mock_dlq.send.call_args[0][0] == "job789"
+
+
+@pytest.mark.unit
+def test_dlq_middleware_fallback_max_retries_is_3() -> None:
+    """Fallback para actors sem max_retries declarado deve ser 3, não 21."""
+    from worker.main import DlqMiddleware
+
+    middleware = DlqMiddleware()
+    broker = MagicMock()
+    actor = MagicMock()
+    actor.options = {}  # sem max_retries declarado
+    broker.get_actor.return_value = actor
+
+    message = MagicMock()
+    message.args = ("job-fallback",)
+    message.actor_name = "unknown_actor"
+
+    # retries=1 → ainda não no limite (fallback=3, limite em retries=2)
+    message.options = {"retries": 1}
+    with patch("worker.dlq_handler.handle_dead_letter") as mock_dlq:
+        middleware.after_process_message(broker, message, exception=RuntimeError("x"))
+    mock_dlq.send.assert_not_called()
+
+    # retries=2 → terceira falha com fallback=3, deve disparar DLQ
+    message.options = {"retries": 2}
+    with patch("worker.dlq_handler.handle_dead_letter") as mock_dlq:
+        middleware.after_process_message(broker, message, exception=RuntimeError("x"))
+    mock_dlq.send.assert_called_once()

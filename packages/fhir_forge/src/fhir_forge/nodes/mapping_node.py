@@ -24,7 +24,10 @@ that represents the primary data entity managed by that endpoint.
 Rules:
 - Return ONLY a JSON object — no markdown fences, no explanation.
 - The JSON must include "resourceType" and "id".
-- Use realistic but synthetic data (no real CPFs or CNSs).
+- Use obviously synthetic placeholder values for all fields: "Operadora Exemplo" for names, \
+  "000000000" for codes, "INS-000000001" for subscriber IDs — never realistic-looking \
+  Brazilian identifiers (CPF, CNS, CNPJ, ANS codes).
+- For Patient/Practitioner references use {"reference": "Patient/patient-example"}.
 - Use proper UTF-8 for accented characters (ã, é, ç, ó, í, ú).
   Never produce mojibake sequences such as "Ã£", "Ã©", "Ã§", "Ã³".
 - For Patient: include identifier array with CPF \
@@ -32,6 +35,12 @@ Rules:
   CNS (system "https://rnds.saude.gov.br/fhir/NamingSystem/cns").
 - For Encounter: include "status", "class", and "subject".
 - For Observation: include "status", "code" (LOINC), "subject", and "valueQuantity".
+- Coverage.type.coding mapping for Brazilian insuranceType values:
+    SELF_PAYMENT / AUTO_PAGAMENTO -> code "pay", system "http://terminology.hl7.org/CodeSystem/coverage-type"
+    PRIVATE / PARTICULAR          -> code "PRIV", system "http://terminology.hl7.org/CodeSystem/v3-ActCode"
+    SUS / PUBLICO                 -> code "PUBLICPOL", system "http://terminology.hl7.org/CodeSystem/v3-ActCode"
+    HEALTH_PLAN / CONVENIO        -> code "PLAN", system "http://terminology.hl7.org/CodeSystem/coverage-type"
+    When insuranceType is absent, default to PRIV.
 - If the endpoint does not map to a FHIR resource, return {"resourceType": "Basic", "id": "n/a"}.
 """
 
@@ -81,6 +90,42 @@ _FEW_SHOT_EXAMPLES = [
                 },
                 "subject": {"reference": "Patient/patient-example"},
                 "period": {"start": "2024-01-15T09:00:00-03:00", "end": "2024-01-15T09:30:00-03:00"},
+            }
+        ),
+    },
+    {
+        "role": "user",
+        "content": "Endpoint: POST /insurances | createInsurance | Register health insurance | tags: insurance",
+    },
+    {
+        "role": "assistant",
+        "content": json.dumps(
+            {
+                "resourceType": "Coverage",
+                "id": "createInsurance-example",
+                "status": "active",
+                "type": {
+                    "coding": [
+                        {
+                            "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+                            "code": "PRIV",
+                            "display": "private",
+                        }
+                    ]
+                },
+                "subscriber": {"reference": "Patient/patient-example"},
+                "subscriberId": "INS-000000001",
+                "beneficiary": {"reference": "Patient/patient-example"},
+                "payor": [
+                    {
+                        "identifier": {
+                            "system": "http://www.ans.gov.br/",
+                            "value": "000000",
+                        },
+                        "display": "Operadora Exemplo",
+                    }
+                ],
+                "period": {"start": "2024-01-01"},
             }
         ),
     },

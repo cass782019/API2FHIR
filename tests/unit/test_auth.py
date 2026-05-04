@@ -128,6 +128,26 @@ def test_convert_rejects_invalid_token() -> None:
     assert resp.status_code == 401
 
 
+@pytest.mark.unit
+def test_noauth_raises_in_production() -> None:
+    """Startup must fail fast when FEATURE_ADMIN_NOAUTH=true in production."""
+    from unittest.mock import MagicMock
+
+    from api.main import create_app
+
+    mock_settings = MagicMock()
+    mock_settings.env = "production"
+    mock_settings.feature_admin_noauth = True
+    mock_settings.log_level = "DEBUG"
+    mock_settings.feature_mcp_enabled = False
+
+    # lifespan does a lazy `from core.settings import settings` — patch the singleton
+    with patch("core.settings.settings", mock_settings):
+        with pytest.raises(RuntimeError, match="FEATURE_ADMIN_NOAUTH"):
+            with TestClient(create_app(), raise_server_exceptions=True) as _:
+                pass  # lifespan executes on TestClient context-manager entry
+
+
 # ------------------------------------------------------------------ #
 # Helpers
 # ------------------------------------------------------------------ #

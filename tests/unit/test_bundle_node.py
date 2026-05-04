@@ -86,11 +86,12 @@ def test_invalid_resources_appended_when_max_retries() -> None:
 
 
 @pytest.mark.unit
-def test_empty_resources_yields_empty_entries() -> None:
+def test_empty_resources_omits_entry_key() -> None:
+    """FHIR R4: entry array must be absent when empty, not present as []."""
     from fhir_forge.nodes.bundle_node import bundle_node
 
     out = bundle_node(_state([]))
-    assert out["_bundle"]["entry"] == []
+    assert "entry" not in out["_bundle"]
 
 
 @pytest.mark.unit
@@ -120,3 +121,14 @@ def test_narrative_preserved_when_present() -> None:
     res = out["_bundle"]["entry"][0]["resource"]
     assert res["text"]["status"] == "additional"
     assert "Original" in res["text"]["div"]
+
+
+@pytest.mark.unit
+def test_narrative_div_is_ascii_safe() -> None:
+    """_NARRATIVE_DIV must be pure ASCII so no encoding round-trip can corrupt it."""
+    from fhir_forge.nodes.bundle_node import _NARRATIVE_DIV
+
+    assert _NARRATIVE_DIV.isascii(), (
+        f"_NARRATIVE_DIV contains non-ASCII chars: "
+        f"{[repr(c) for c in _NARRATIVE_DIV if not c.isascii()]}"
+    )

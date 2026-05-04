@@ -17,7 +17,12 @@ def _redis_client() -> redis.Redis:
 
 def _save_failed(job_id: str, error: str, r: Any) -> None:
     result_key = f"worker:result:{job_id}"
-    r.set(result_key, json.dumps({"status": "failed", "error": error}), ex=86400)
+    has_payload = bool(r.exists(f"worker:payload:{job_id}"))
+    r.set(
+        result_key,
+        json.dumps({"status": "failed", "error": error, "replayable": has_payload}),
+        ex=86400,
+    )
 
 
 @dramatiq.actor(queue_name="fhir_dlq")
